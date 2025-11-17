@@ -4,8 +4,8 @@
  * Accessible to all users with role-based permissions
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
 
 $page_title = 'Bug Report System';
 
@@ -97,7 +97,7 @@ try {
     error_log("Error fetching bug reports: " . $e->getMessage());
 }
 
-include 'includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="container">
@@ -108,7 +108,7 @@ include 'includes/header.php';
                 <span style="font-size: 14px; color: #666; font-weight: normal;">(Your Reports Only)</span>
             <?php endif; ?>
         </h2>
-        <a href="index.php" class="btn btn-secondary">← Back to Home</a>
+        <a href="/index.php" class="btn btn-secondary">← Back to Home</a>
     </div>
 
     <?php if (isset($success_message)): ?>
@@ -428,4 +428,4 @@ include 'includes/header.php';
 }
 </style>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

@@ -9,9 +9,9 @@
  * - Complete database-driven user system integration
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 $page_title = 'Edit Subcategory';
 $error_message = '';
@@ -21,7 +21,7 @@ $subcategory = null;
 $subcategory_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($subcategory_id <= 0) {
-    header('Location: index.php');
+    header('Location: /index.php');
     exit;
 }
 
@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $subcategory) {
             }
 
             // Redirect to home with success message
-            header('Location: index.php?success=subcategory_updated');
+            header('Location: /index.php?success=subcategory_updated');
             exit;
 
         } catch (PDOException $e) {
@@ -124,12 +124,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $subcategory) {
     }
 }
 
-include 'includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="container">
     <div class="breadcrumb">
-        <a href="index.php">Home</a>
+        <a href="/index.php">Home</a>
         <span>></span>
         <span class="current">Edit Subcategory</span>
     </div>
@@ -138,7 +138,7 @@ include 'includes/header.php';
         <div class="error-message">
             <?php echo htmlspecialchars($error_message); ?>
         </div>
-        <a href="index.php" class="btn btn-primary">Back to Home</a>
+        <a href="/index.php" class="btn btn-primary">Back to Home</a>
     <?php else: ?>
         <div class="card">
             <div class="card-header">
@@ -276,7 +276,7 @@ include 'includes/header.php';
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-success">Update Subcategory</button>
-                    <a href="index.php" class="btn btn-secondary">Cancel</a>
+                    <a href="/index.php" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>
         </div>
@@ -301,4 +301,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

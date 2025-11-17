@@ -14,10 +14,10 @@ $page_title = 'Training Dashboard';
 $HIDE_HEADER_TRAINING_BAR = true;
 
 // Require auth **before** rendering header (header uses session/user info)
-require_once __DIR__ . '/includes/auth_check.php';
+require_once __DIR__ . '/../includes/auth_check.php';
 
 // Pull in the global header (prints DOCTYPE, <head>, and <body> opening)
-require_once __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/../includes/header.php';
 
 // Keep your dashboard page-specific styles
 echo "<style>
@@ -60,7 +60,7 @@ echo "<style>
 echo "<div class='main-container'>";
 
 // Load required files
-require_once 'includes/auth_check.php';
+require_once __DIR__ . '/../includes/auth_check.php';
 
 if (!isset($_SESSION['user_id'])) {
     echo "<div class='error'>❌ No user ID in session</div>";
@@ -70,7 +70,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Load training helpers
-if (!file_exists('includes/training_helpers.php')) {
+if (!file_exists(__DIR__ . '/../includes/training_helpers.php')) {
     // Define fallback functions
     function is_training_user() {
         return isset($_SESSION['user_role']) && strtolower($_SESSION['user_role']) === 'training';
@@ -86,19 +86,19 @@ if (!file_exists('includes/training_helpers.php')) {
         ];
     }
 } else {
-    require_once 'includes/training_helpers.php';
+    require_once __DIR__ . '/../includes/training_helpers.php';
 }
 
 // Check if user is training user
 if (!function_exists('is_training_user') || !is_training_user()) {
     echo "<div class='error'>❌ User is not a training user</div>";
-    echo "<a href='index.php' class='btn'>Back to Home</a>";
+    echo "<a href='/index.php' class='btn'>Back to Home</a>";
     echo "</div></body></html>";
     exit;
 }
 
 // Database connection
-require_once 'includes/db_connect.php';
+require_once __DIR__ . '/../includes/db_connect.php';
 global $pdo;
 
 // Check training tables
@@ -125,7 +125,7 @@ if (!$tables_exist) {
     echo "<h3>⚠️ Training System Not Set Up</h3>";
     echo "<p>The training system tables are not available. Please contact an administrator to set up the training system.</p>";
     echo "</div>";
-    echo "<a href='index.php' class='btn'>← Back to Home</a>";
+    echo "<a href='/index.php' class='btn'>← Back to Home</a>";
     echo "</div></body></html>";
     exit;
 }
@@ -325,11 +325,11 @@ try {
 }
 
 echo "<div style='margin-top: 30px;'>";
-echo "<a href='index.php' class='btn'>← Back to Home</a>";
+echo "<a href='/index.php' class='btn'>← Back to Home</a>";
 echo "</div>";
 
 echo "</div>"; // End container
 
-require_once __DIR__ . '/includes/footer.php';
+require_once __DIR__ . '/../includes/footer.php';
 echo "</body></html>";
 ?>

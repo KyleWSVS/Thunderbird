@@ -7,13 +7,13 @@
  * Author: Claude Code Assistant
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 // Load training helpers if available
-if (file_exists('includes/training_helpers.php')) {
-    require_once 'includes/training_helpers.php';
+if (file_exists(__DIR__ . '/../includes/training_helpers.php')) {
+    require_once __DIR__ . '/../includes/training_helpers.php';
 }
 
 // Get attempt ID from URL
@@ -40,7 +40,7 @@ $can_force_breakdown = $is_admin_view_flag && (is_admin() || is_super_admin());
 // Check if user is training user
 // --- BEGIN REPLACEMENT (allow any authenticated user to view their own results) ---
 if (!isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: /index.php');
     exit;
 }
 // --- END REPLACEMENT ---
@@ -226,7 +226,7 @@ if (!$attempt) {
     $error_message = 'Error loading quiz results: ' . $e->getMessage();
 }
 
-include 'includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <style>
@@ -807,4 +807,4 @@ include 'includes/header.php';
     <?php endif; ?>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

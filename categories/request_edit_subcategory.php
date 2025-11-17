@@ -6,9 +6,9 @@
  * Created: 2025-11-03 (Edit Request System)
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 $page_title = 'Request Edit Subcategory';
 $error_message = '';
@@ -19,7 +19,7 @@ $subcategory = null;
 $subcategory_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($subcategory_id <= 0) {
-    header('Location: index.php');
+    header('Location: /index.php');
     exit;
 }
 
@@ -108,12 +108,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $subcategory && $edit_requests_tabl
     }
 }
 
-include 'includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="container">
     <div class="breadcrumb">
-        <a href="index.php">Home</a>
+        <a href="/index.php">Home</a>
         <span>></span>
         <span><?php echo htmlspecialchars($subcategory['category_name']); ?></span>
         <span>></span>
@@ -129,14 +129,14 @@ include 'includes/header.php';
                     <h3 style="color: #856404; margin: 0 0 8px 0;">⚠️ Edit Request System Not Available</h3>
                     <p style="color: #856404; margin: 0;">The edit request system is not yet available in your database. Please contact an admin to set up the edit requests functionality.</p>
                 </div>
-                <a href="index.php" class="btn btn-primary">Back to Home</a>
+                <a href="/index.php" class="btn btn-primary">Back to Home</a>
             </div>
         </div>
     <?php elseif (!$subcategory): ?>
         <div class="card">
             <div class="card-content" style="padding: 20px;">
                 <div class="error-message"><?php echo htmlspecialchars($error_message); ?></div>
-                <a href="index.php" class="btn btn-primary">Back to Home</a>
+                <a href="/index.php" class="btn btn-primary">Back to Home</a>
             </div>
         </div>
     <?php else: ?>
@@ -219,7 +219,7 @@ include 'includes/header.php';
             <?php else: ?>
                 <div class="card-content" style="padding: 20px;">
                     <div style="text-align: center; margin: 20px 0;">
-                        <a href="index.php" class="btn btn-primary">Back to Home</a>
+                        <a href="/index.php" class="btn btn-primary">Back to Home</a>
                     </div>
                 </div>
             <?php endif; ?>
@@ -227,4 +227,4 @@ include 'includes/header.php';
     <?php endif; ?>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

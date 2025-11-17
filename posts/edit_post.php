@@ -10,13 +10,13 @@
  * - Complete database-driven user system integration
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 // Load training helpers if available
-if (file_exists('includes/training_helpers.php')) {
-    require_once 'includes/training_helpers.php';
+if (file_exists(__DIR__ . '/../includes/training_helpers.php')) {
+    require_once __DIR__ . '/../includes/training_helpers.php';
 }
 
 $page_title = 'Edit Post';
@@ -25,7 +25,7 @@ $post_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $post = null;
 
 if ($post_id <= 0) {
-    header('Location: index.php');
+    header('Location: /index.php');
     exit;
 }
 
@@ -246,13 +246,13 @@ if ($post) {
     }
 }
 
-include 'includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="container">
     <?php if ($post): ?>
         <div class="breadcrumb">
-            <a href="index.php">Home</a>
+            <a href="/index.php">Home</a>
             <span>></span>
             <span><?php echo htmlspecialchars($post['category_name']); ?></span>
             <span>></span>
@@ -268,7 +268,7 @@ include 'includes/header.php';
         <div class="error-message">
             <?php echo htmlspecialchars($error_message); ?>
         </div>
-        <a href="index.php" class="btn btn-primary">Back to Home</a>
+        <a href="/index.php" class="btn btn-primary">Back to Home</a>
     <?php else: ?>
         <div class="card">
             <div class="card-header">
@@ -465,4 +465,4 @@ include 'includes/header.php';
     });
 </script>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

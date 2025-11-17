@@ -4,8 +4,8 @@
  * Updates existing reply with file management
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
 
 $page_title = 'Edit Update';
 $error_message = '';
@@ -16,7 +16,7 @@ $files = [];
 $reply_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($reply_id <= 0) {
-    header('Location: index.php');
+    header('Location: /index.php');
     exit;
 }
 
@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $reply) {
     }
 }
 
-include 'includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="container">
@@ -148,10 +148,10 @@ include 'includes/header.php';
         <div class="error-message">
             <?php echo htmlspecialchars($error_message); ?>
         </div>
-        <a href="index.php" class="btn btn-primary">Back to Home</a>
+        <a href="/index.php" class="btn btn-primary">Back to Home</a>
     <?php else: ?>
         <div class="breadcrumb">
-            <a href="index.php">Home</a>
+            <a href="/index.php">Home</a>
             <span>></span>
             <a href="post.php?id=<?php echo $reply['post_id']; ?>">Back to Post</a>
             <span>></span>
@@ -238,4 +238,4 @@ include 'includes/header.php';
     });
 </script>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

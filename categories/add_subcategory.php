@@ -9,9 +9,9 @@
  * - Complete database-driven user system integration
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 $page_title = 'Add Subcategory';
 $error_message = '';
@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 // Redirect to home with success message
-                header('Location: index.php?success=subcategory_added');
+                header('Location: /index.php?success=subcategory_added');
                 exit;
             }
         } catch (PDOException $e) {
@@ -118,12 +118,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-include 'includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="container">
     <div class="breadcrumb">
-        <a href="index.php">Home</a>
+        <a href="/index.php">Home</a>
         <span>></span>
         <span class="current">Add Subcategory</span>
     </div>
@@ -262,7 +262,7 @@ include 'includes/header.php';
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-success">Create Subcategory</button>
-                    <a href="index.php" class="btn btn-secondary">Cancel</a>
+                    <a href="/index.php" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>
         <?php endif; ?>
@@ -338,4 +338,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

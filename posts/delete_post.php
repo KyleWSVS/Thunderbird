@@ -4,13 +4,13 @@
  * Deletes a post and all associated replies and files
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 // PERMISSION CHECK: Only admins and super admins can delete posts
 if (!is_admin() && !is_super_admin()) {
-    header('Location: index.php?error=permission_denied');
+    header('Location: /index.php?error=permission_denied');
     exit;
 }
 
@@ -18,7 +18,7 @@ if (!is_admin() && !is_super_admin()) {
 $post_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($post_id <= 0) {
-    header('Location: index.php');
+    header('Location: /index.php');
     exit;
 }
 
@@ -34,7 +34,7 @@ try {
     $post = $stmt->fetch();
 
     if (!$post) {
-        header('Location: index.php');
+        header('Location: /index.php');
         exit;
     }
 

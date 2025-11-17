@@ -12,7 +12,7 @@ echo "<h1>Search Debug Test</h1>";
 
 // Test database connection
 try {
-    require_once 'includes/db_connect.php';
+    require_once __DIR__ . '/../includes/db_connect.php';
     echo "✅ Database connection successful<br>";
 } catch (Exception $e) {
     die("❌ Database connection failed: " . $e->getMessage());
@@ -182,5 +182,5 @@ echo "<li>OR there's an authentication/session issue in the search APIs</li>";
 echo "</ol>";
 
 echo "<p><strong>Immediate Fix Needed:</strong> Create a fallback search that uses LIKE when FULLTEXT fails.</p>";
-echo "<p><a href='index.php'>🔍 Back to Main Page</a></p>";
+echo "<p><a href='/index.php'>🔍 Back to Main Page</a></p>";
 ?>

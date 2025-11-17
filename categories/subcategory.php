@@ -9,9 +9,9 @@
  * - Complete database-driven user system integration
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 $page_title = 'Posts';
 $error_message = '';
@@ -22,7 +22,7 @@ $posts = [];
 $subcategory_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($subcategory_id <= 0) {
-    header('Location: index.php');
+    header('Location: /index.php');
     exit;
 }
 
@@ -276,12 +276,12 @@ function create_preview($html_content, $length = 200) {
     return $text;
 }
 
-include 'includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="container">
     <?php
-    require_once __DIR__ . '/includes/search_widget.php';
+    require_once __DIR__ . '/../includes/search_widget.php';
     // Point to your known-good endpoint that works like index:
     render_search_bar('search_working.php');
     ?>
@@ -450,7 +450,7 @@ include 'includes/header.php';
 
     <?php if ($subcategory): ?>
         <div class="breadcrumb">
-            <a href="index.php">Home</a>
+            <a href="/index.php">Home</a>
             <span>></span>
             <span><?php echo htmlspecialchars($subcategory['category_name']); ?></span>
             <span>></span>
@@ -479,7 +479,7 @@ include 'includes/header.php';
         <div class="error-message">
             <?php echo htmlspecialchars($error_message); ?>
         </div>
-        <a href="index.php" class="btn btn-primary">Back to Home</a>
+        <a href="/index.php" class="btn btn-primary">Back to Home</a>
     <?php elseif (isset($_GET['success'])): ?>
         <div class="success-message">
             <?php
@@ -546,4 +546,4 @@ include 'includes/header.php';
     <?php endif; ?>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

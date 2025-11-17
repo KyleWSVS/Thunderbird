@@ -26,7 +26,7 @@ if (file_exists($config_path)) {
 session_start();
 if (isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true) {
     if (time() - $_SESSION['login_time'] <= SESSION_TIMEOUT) {
-        header('Location: index.php');
+        header('Location: /index.php');
         exit;
     }
 }
@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_color'] = $user['color'];
                 $_SESSION['user_role'] = $user['role'];
 
-                header('Location: index.php');
+                header('Location: /index.php');
                 exit;
             } else {
                 // FAILED: Login failed
