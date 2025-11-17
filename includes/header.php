@@ -241,7 +241,7 @@ elseif ($is_prod): ?>
                         </script>
                     <?php endif; ?>
 
-                    <a href="logout.php" class="logout-btn">Logout</a>
+                    <a href="/logout.php" class="logout-btn">Logout</a>
                 </div>
             <?php endif; ?>
         </div>
