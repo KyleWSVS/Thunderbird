@@ -8,13 +8,13 @@
  * Author: Claude Code Assistant
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 // Load training helpers if available
-if (file_exists('includes/training_helpers.php')) {
-    require_once 'includes/training_helpers.php';
+if (file_exists(__DIR__ . '/../includes/training_helpers.php')) {
+    require_once __DIR__ . '/../includes/training_helpers.php';
 }
 
 // --- BEGIN REPLACEMENT ---
@@ -54,7 +54,7 @@ $success_message = '';
 
 // Check if user is training user
 if (!function_exists('is_training_user') || !is_training_user()) {
-    header('Location: index.php');
+    header('Location: /index.php');
     exit;
 }
 
@@ -501,7 +501,7 @@ if ($can_attempt && $quiz) {
     }
 }
 
-include 'includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <style>
@@ -1060,4 +1060,4 @@ window.addEventListener('beforeunload', function() {
 });
 </script>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

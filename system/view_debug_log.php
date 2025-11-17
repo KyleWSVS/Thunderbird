@@ -7,8 +7,8 @@
  * Purpose: View assignment debugging information
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 // Allow access if debug console is enabled by super admin or if user is admin
 $debug_enabled = isset($_COOKIE['debug_console_enabled']) && $_COOKIE['debug_console_enabled'] === 'true';
@@ -17,7 +17,7 @@ if (!is_admin() && !$debug_enabled) {
     die('Access denied. Debug console must be enabled by super admin.');
 }
 
-$debug_log_file = __DIR__ . '/includes/assignment_debug.log';
+$debug_log_file = __DIR__ . '/../includes/assignment_debug.log';
 $page_title = 'Assignment Debug Log';
 
 // Get the last 50 lines of debug info

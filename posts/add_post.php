@@ -9,10 +9,10 @@
  * - Complete database-driven user system integration
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
-require_once 'includes/training_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
+require_once __DIR__ . '/../includes/training_helpers.php';
 
 $page_title = 'Add Post';
 
@@ -24,7 +24,7 @@ if (!can_create_posts()) {
         $error_message = 'Only administrators can create posts. Please contact an administrator if you need to create content.';
     }
 
-    include 'includes/header.php';
+    include __DIR__ . '/../includes/header.php';
     ?>
     <div class="container">
         <div class="card">
@@ -32,7 +32,7 @@ if (!can_create_posts()) {
                 <div style="font-size: 48px; margin-bottom: 16px;">🚫</div>
                 <h2>Access Denied</h2>
                 <p style="color: #6c757d; margin-bottom: 24px;"><?php echo htmlspecialchars($error_message); ?></p>
-                <a href="index.php" class="btn btn-primary">← Back to Home</a>
+                <a href="/index.php" class="btn btn-primary">← Back to Home</a>
                 <?php if (is_training_user()): ?>
                 <br><br>
                 <a href="training_dashboard.php" class="btn btn-secondary">🎓 View Training Dashboard</a>
@@ -41,7 +41,7 @@ if (!can_create_posts()) {
         </div>
     </div>
     <?php
-    include 'includes/footer.php';
+    include __DIR__ . '/../includes/footer.php';
     exit;
 }
 $error_message = '';
@@ -49,7 +49,7 @@ $subcategory_id = isset($_GET['subcategory_id']) ? intval($_GET['subcategory_id'
 $subcategory = null;
 
 if ($subcategory_id <= 0) {
-    header('Location: index.php');
+    header('Location: /index.php');
     exit;
 }
 
@@ -243,13 +243,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $subcategory) {
     }
 }
 
-include 'includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="container">
     <?php if ($subcategory): ?>
         <div class="breadcrumb">
-            <a href="index.php">Home</a>
+            <a href="/index.php">Home</a>
             <span>></span>
             <span><?php echo htmlspecialchars($subcategory['category_name']); ?></span>
             <span>></span>
@@ -263,7 +263,7 @@ include 'includes/header.php';
         <div class="error-message">
             <?php echo htmlspecialchars($error_message); ?>
         </div>
-        <a href="index.php" class="btn btn-primary">Back to Home</a>
+        <a href="/index.php" class="btn btn-primary">Back to Home</a>
     <?php else: ?>
         <div class="card">
             <div class="card-header">
@@ -439,4 +439,4 @@ include 'includes/header.php';
     });
 </script>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

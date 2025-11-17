@@ -4,9 +4,9 @@
  * Updated: 2025-11-05 (Enhanced search system with autocomplete and advanced search)
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 $page_title = 'Search Results';
 
@@ -473,13 +473,13 @@ if (!empty($search_query)) {
     }
 }
 
-include 'includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="container">
     <div class="flex-between mb-20">
         <h2 style="font-size: 24px; color: #2d3748;">🔍 Search Results</h2>
-        <a href="index.php" class="btn btn-secondary">← Back to Home</a>
+        <a href="/index.php" class="btn btn-secondary">← Back to Home</a>
     </div>
 
     <!-- Search Form -->
@@ -545,7 +545,7 @@ include 'includes/header.php';
                             </h3>
                         </div>
                         <div>
-                            <a href="index.php" class="btn btn-primary btn-small">View Category</a>
+                            <a href="/index.php" class="btn btn-primary btn-small">View Category</a>
                         </div>
                     </div>
 
@@ -629,4 +629,4 @@ include 'includes/header.php';
 }
 </style>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

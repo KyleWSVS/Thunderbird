@@ -8,9 +8,9 @@
  * Author: Claude Code Assistant
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 // Only allow admin users
 if (!is_admin()) {
@@ -453,7 +453,7 @@ try {
 } catch (PDOException $e) {
     $error_message = 'Error loading questions: ' . $e->getMessage();
 }
-include 'includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <style>
@@ -1177,4 +1177,4 @@ window.onclick = function(event) {
 }
 </script>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

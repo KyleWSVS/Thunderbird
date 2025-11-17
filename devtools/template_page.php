@@ -5,20 +5,20 @@
  * Then drop your custom logic + markup into the container below.
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 // Load training helpers if available (keeps behavior consistent with index.php)
-if (file_exists('includes/training_helpers.php')) {
-    require_once 'includes/training_helpers.php';
+if (file_exists(__DIR__ . '/../includes/training_helpers.php')) {
+    require_once __DIR__ . '/../includes/training_helpers.php';
 }
 
 // Set the page title used by header.php
 $page_title = 'Page Title Here';
 
 // Include standard header (HTML <head>, nav, etc.)
-include 'includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="container">
@@ -39,5 +39,5 @@ include 'includes/header.php';
 
 <?php
 // Standard footer (includes your latest updates widget, bug report button, etc.)
-include 'includes/footer.php';
+include __DIR__ . '/../includes/footer.php';
 ?>

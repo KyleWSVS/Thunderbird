@@ -4,13 +4,13 @@
  * Displays post content, attachments, and replies
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
-require_once 'includes/user_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/user_helpers.php';
 
 // Load training helpers if available
-if (file_exists('includes/training_helpers.php')) {
-    require_once 'includes/training_helpers.php';
+if (file_exists(__DIR__ . '/../includes/training_helpers.php')) {
+    require_once __DIR__ . '/../includes/training_helpers.php';
 }
 
 // Get post ID first (needed for training progress tracking)
@@ -130,7 +130,7 @@ $files = [];
 $replies = [];
 
 if ($post_id <= 0) {
-    header('Location: index.php');
+    header('Location: /index.php');
     exit;
 }
 
@@ -293,19 +293,19 @@ function is_image($file_path) {
 }
 
 $page_title = $post ? htmlspecialchars($post['title']) : 'Post';
-include 'includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="container">
     <?php
-    require_once __DIR__ . '/includes/search_widget.php';
+    require_once __DIR__ . '/../includes/search_widget.php';
     // Point to your known-good endpoint that works like index:
     render_search_bar('search_working.php');
     ?>
 
     <?php if ($post): ?>
         <div class="breadcrumb">
-            <a href="index.php">Home</a>
+            <a href="/index.php">Home</a>
             <span>></span>
             <span><?php echo htmlspecialchars($post['category_name']); ?></span>
             <span>></span>
@@ -322,7 +322,7 @@ include 'includes/header.php';
         <div class="error-message">
             <?php echo htmlspecialchars($error_message); ?>
         </div>
-        <a href="index.php" class="btn btn-primary">Back to Home</a>
+        <a href="/index.php" class="btn btn-primary">Back to Home</a>
     <?php elseif (isset($_GET['success'])): ?>
         <div class="success-message">
             <?php
@@ -783,4 +783,4 @@ function initPdfLazy(){
 
 document.addEventListener('DOMContentLoaded', initPdfLazy);
 </script>
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

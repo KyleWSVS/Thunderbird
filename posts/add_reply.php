@@ -4,8 +4,8 @@
  * Processes reply submission from post.php form
  */
 
-require_once 'includes/auth_check.php';
-require_once 'includes/db_connect.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db_connect.php';
 
 $error_message = '';
 
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validation
     if ($post_id <= 0) {
-        header('Location: index.php');
+        header('Location: /index.php');
         exit;
     }
 
@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 } else {
     // Not a POST request, redirect to home
-    header('Location: index.php');
+    header('Location: /index.php');
     exit;
 }
 ?>
