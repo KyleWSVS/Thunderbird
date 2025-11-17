@@ -569,7 +569,7 @@ if (isset($_GET['course_id']) && isset($_GET['user_id']) &&
     . "<td>{$att_status}</td>"
     . "<td>{$att_date}</td>"
     // admin_view=1 flags that this was opened from the admin analytics page
-    . "<td><a href='quiz_results.php?attempt_id=" . intval($att_id) . "&admin_view=1' class='btn btn-xs btn-primary'>View</a></td>"
+    . "<td><a href='/training/quiz_results.php?attempt_id=" . intval($att_id) . "&admin_view=1' class='btn btn-xs btn-primary'>View</a></td>"
     . "</tr>";
 
                     }
