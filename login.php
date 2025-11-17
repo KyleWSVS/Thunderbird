@@ -1,6 +1,6 @@
 <?php
 /**
- * Login Page  3:43pm
+ * Login Page  3:48pm
  * Handles user authentication with database-driven system
  * Updated: 2025-11-05 (Removed hardcoded user fallback - database-only authentication)
  *
