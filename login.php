@@ -10,7 +10,13 @@
  * - Proper session management and brute force protection
  */
 
-require_once 'config.php';
+// Load application configuration with robust path handling
+$config_path = __DIR__ . '/config.php';
+if (!file_exists($config_path)) {
+    error_log('Configuration file missing at ' . $config_path);
+    exit('Configuration error. Please contact support.');
+}
+require_once $config_path;
 session_start();
 if (isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true) {
     if (time() - $_SESSION['login_time'] <= SESSION_TIMEOUT) {
