@@ -254,6 +254,12 @@ try {
         $stmt = $pdo->prepare("SELECT * FROM files WHERE post_id = ? ORDER BY uploaded_at ASC");
         $stmt->execute([$post_id]);
         $files = $stmt->fetchAll();
+        $files = array_map(function($file) {
+            if (isset($file['file_path'])) {
+                $file['file_path'] = normalize_file_path($file['file_path']);
+            }
+            return $file;
+        }, $files);
 
         // Fetch replies for this post
         $stmt = $pdo->prepare("SELECT * FROM replies WHERE post_id = ? ORDER BY created_at ASC");
@@ -292,6 +298,19 @@ function is_image($file_path) {
     return in_array($ext, IMAGE_EXTENSIONS);
 }
 
+function normalize_file_path($path) {
+    if (empty($path)) {
+        return '';
+    }
+
+    // Keep absolute URLs untouched
+    if (preg_match('#^https?://#i', $path)) {
+        return $path;
+    }
+
+    return '/' . ltrim($path, '/');
+}
+
 $page_title = $post ? htmlspecialchars($post['title']) : 'Post';
 include __DIR__ . '/../includes/header.php';
 ?>
@@ -300,7 +319,7 @@ include __DIR__ . '/../includes/header.php';
     <?php
     require_once __DIR__ . '/../includes/search_widget.php';
     // Point to your known-good endpoint that works like index:
-    render_search_bar('search_working.php');
+    render_search_bar();
     ?>
 
     <?php if ($post): ?>
@@ -584,6 +603,12 @@ include __DIR__ . '/../includes/header.php';
                             $stmt = $pdo->prepare("SELECT * FROM files WHERE reply_id = ? ORDER BY uploaded_at ASC");
                             $stmt->execute([$reply['id']]);
                             $reply_files = $stmt->fetchAll();
+                            $reply_files = array_map(function($file) {
+                                if (isset($file['file_path'])) {
+                                    $file['file_path'] = normalize_file_path($file['file_path']);
+                                }
+                                return $file;
+                            }, $reply_files);
                             ?>
                             <div class="reply-bubble">
                                 <div class="reply-content">

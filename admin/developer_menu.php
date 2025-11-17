@@ -368,7 +368,7 @@ sort($htmlFiles);
                         </div>
                         <div class="file-type" style="background: #4CAF50; color: white;">ADMIN</div>
                     </a>
-                    <a href="bug_report.php" target="_blank" class="file-item" style="background: #fff3cd; border-color: #ffc107;">
+                    <a href="/bugs/bug_report.php" target="_blank" class="file-item" style="background: #fff3cd; border-color: #ffc107;">
                         <div class="file-icon">🐛</div>
                         <div class="file-info">
                             <div class="file-name">Bug Reports</div>

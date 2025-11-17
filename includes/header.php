@@ -138,7 +138,7 @@ elseif ($is_prod): ?>
 <?php endif; ?>
 
                     <?php if (is_super_admin() && $unresolved_bugs > 0): ?>
-                    <a href="bug_report.php" style="display: flex; align-items: center; gap: 4px; background: #dc3545; color: white; padding: 4px 8px; border-radius: 12px; text-decoration: none; font-size: 11px; font-weight: 500;" title="Unresolved Bugs">
+                    <a href="/bugs/bug_report.php" style="display: flex; align-items: center; gap: 4px; background: #dc3545; color: white; padding: 4px 8px; border-radius: 12px; text-decoration: none; font-size: 11px; font-weight: 500;" title="Unresolved Bugs">
                         <span>🐛</span>
                         <span><?php echo $unresolved_bugs; ?></span>
                     </a>
@@ -363,27 +363,27 @@ elseif ($is_prod): ?>
       <div class="dev-dropdown-section">
         <div class="dev-section-title">🛠️ Admin Tools</div>
         <div class="dev-file-list">
-          <a href="manage_users.php" class="dev-file-item">
+          <a href="/admin/manage_users.php" class="dev-file-item">
             <span class="dev-file-icon">👥</span>
             <span class="dev-file-name">User Management</span>
           </a>
-          <a href="manage_training_courses.php" class="dev-file-item">
+          <a href="/admin/manage_training_courses.php" class="dev-file-item">
             <span class="dev-file-icon">🎓</span>
             <span class="dev-file-name">Training Courses</span>
           </a>
-          <a href="manage_quizzes.php" class="dev-file-item">
+          <a href="/admin/manage_quizzes.php" class="dev-file-item">
             <span class="dev-file-icon">📝</span>
             <span class="dev-file-name">Manage Quizzes</span>
           </a>
-          <a href="training_admin_analytics.php" class="dev-file-item">
+          <a href="/admin/training_admin_analytics.php" class="dev-file-item">
             <span class="dev-file-icon">📊</span>
             <span class="dev-file-name">Admin Training Dashboard</span>
           </a>
-          <a href="manage_edit_requests.php" class="dev-file-item">
+          <a href="/admin/manage_edit_requests.php" class="dev-file-item">
             <span class="dev-file-icon">📝</span>
             <span class="dev-file-name">Edit Requests</span>
           </a>
-          <a href="bug_report.php" class="dev-file-item">
+          <a href="/bugs/bug_report.php" class="dev-file-item">
             <span class="dev-file-icon">🐛</span>
             <span class="dev-file-name">Bug Report System</span>
           </a>
