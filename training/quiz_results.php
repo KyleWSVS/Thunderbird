@@ -71,8 +71,8 @@ $stmt = $pdo->prepare("
            END AS content_name,
            CASE tcc.content_type
                WHEN 'category'   THEN 'category.php?id='
-               WHEN 'subcategory' THEN 'subcategory.php?id='
-               WHEN 'post'       THEN 'post.php?id='
+               WHEN 'subcategory' THEN '/categories/subcategory.php?id='
+               WHEN 'post'       THEN '/posts/post.php?id='
            END AS content_url
     FROM user_quiz_attempts uqa
     JOIN training_quizzes tq
@@ -113,8 +113,8 @@ if (!$attempt) {
                END AS content_name,
                CASE COALESCE(NULLIF(tq.content_type,''),'post')
                    WHEN 'category'   THEN 'category.php?id='
-                   WHEN 'subcategory' THEN 'subcategory.php?id='
-                   WHEN 'post'       THEN 'post.php?id='
+                   WHEN 'subcategory' THEN '/categories/subcategory.php?id='
+                   WHEN 'post'       THEN '/posts/post.php?id='
                END AS content_url
         FROM user_quiz_attempts uqa
         JOIN training_quizzes tq

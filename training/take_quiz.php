@@ -75,8 +75,8 @@ try {
                END as content_name,
                CASE tcc.content_type
                    WHEN 'category' THEN 'category.php?id='
-                   WHEN 'subcategory' THEN 'subcategory.php?id='
-                   WHEN 'post' THEN 'post.php?id='
+                   WHEN 'subcategory' THEN '/categories/subcategory.php?id='
+                   WHEN 'post' THEN '/posts/post.php?id='
                END as content_url
         FROM training_quizzes tq
         JOIN training_course_content tcc ON tq.content_id = tcc.content_id AND (tq.content_type = tcc.content_type OR tq.content_type = '' OR tq.content_type IS NULL)

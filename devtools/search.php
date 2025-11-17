@@ -566,7 +566,7 @@ include __DIR__ . '/../includes/header.php';
                             In: <?php echo htmlspecialchars($result['category_name']); ?>
                         </div>
                         <div>
-                            <a href="subcategory.php?id=<?php echo $result['id']; ?>" class="btn btn-primary btn-small">View Subcategory</a>
+                            <a href="/categories/subcategory.php?id=<?php echo $result['id']; ?>" class="btn btn-primary btn-small">View Subcategory</a>
                         </div>
                     </div>
 
@@ -583,7 +583,7 @@ include __DIR__ . '/../includes/header.php';
                             Posted: <?php echo date('M j, Y \a\t g:i A', strtotime($result['created_at'])); ?>
                         </div>
                         <div>
-                            <a href="post.php?id=<?php echo $result['id']; ?>" class="btn btn-primary btn-small">Read Post</a>
+                            <a href="/posts/post.php?id=<?php echo $result['id']; ?>" class="btn btn-primary btn-small">Read Post</a>
                         </div>
                     </div>
 
@@ -600,7 +600,7 @@ include __DIR__ . '/../includes/header.php';
                             Posted: <?php echo date('M j, Y \a\t g:i A', strtotime($result['created_at'])); ?>
                         </div>
                         <div>
-                            <a href="post.php?id=<?php echo $result['post_id']; ?>#reply-<?php echo $result['id']; ?>" class="btn btn-primary btn-small">View Reply</a>
+                            <a href="/posts/post.php?id=<?php echo $result['post_id']; ?>#reply-<?php echo $result['id']; ?>" class="btn btn-primary btn-small">View Reply</a>
                         </div>
                     </div>
                 <?php endif; ?>

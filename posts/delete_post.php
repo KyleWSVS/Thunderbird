@@ -79,7 +79,7 @@ try {
     $pdo->commit();
 
     // Redirect to subcategory with success message
-    header('Location: subcategory.php?id=' . $post['subcategory_id'] . '&success=post_deleted');
+    header('Location: /categories/subcategory.php?id=' . $post['subcategory_id'] . '&success=post_deleted');
     exit;
 
 } catch (PDOException $e) {

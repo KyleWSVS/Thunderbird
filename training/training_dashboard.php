@@ -279,7 +279,7 @@ try {
             }
 
             echo "<div class='content-card {$card_class}'>";
-            echo "<h4><a href='post.php?id={$post_id}' style='text-decoration:none;color:#374151;'>{$title}</a></h4>";
+            echo "<h4><a href='/posts/post.php?id={$post_id}' style='text-decoration:none;color:#374151;'>{$title}</a></h4>";
             
             echo "<div class='footer-note'>{$quiz_text}</div>";
             echo "</div>";
