@@ -973,8 +973,8 @@ function get_next_training_item($pdo, $user_id) {
                    END as content_name,
                    CASE tcc.content_type
                        WHEN 'category' THEN CONCAT('category.php?id=', c.id)
-                       WHEN 'subcategory' THEN CONCAT('subcategory.php?id=', sc.id)
-                       WHEN 'post' THEN CONCAT('post.php?id=', p.id)
+                       WHEN 'subcategory' THEN CONCAT('/categories/subcategory.php?id=', sc.id)
+                       WHEN 'post' THEN CONCAT('/posts/post.php?id=', p.id)
                    END as content_url
             FROM training_course_content tcc
             JOIN user_training_assignments uta ON tcc.course_id = uta.course_id

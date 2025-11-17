@@ -504,7 +504,7 @@ include __DIR__ . '/../includes/header.php';
             <?php foreach ($posts as $post): ?>
                 <div class="post-item">
                     <div class="post-header">
-                        <a href="post.php?id=<?php echo $post['id']; ?>">
+                        <a href="/posts/post.php?id=<?php echo $post['id']; ?>">
                             <div class="post-title"><?php echo htmlspecialchars($post['title']); ?></div>
                         </a>
                         <div class="post-privacy-indicator">
@@ -536,8 +536,8 @@ include __DIR__ . '/../includes/header.php';
                     if ($is_admin || $post['user_id'] == $current_user_id):
                     ?>
                         <div class="post-actions" style="margin-top: 8px; display: flex; gap: 8px;">
-                            <a href="edit_post.php?id=<?php echo $post['id']; ?>" class="btn btn-small" style="background: #ffc107; color: black; text-decoration: none; padding: 4px 8px; border-radius: 4px; font-size: 12px;">✏️ Edit</a>
-                            <a href="delete_post.php?id=<?php echo $post['id']; ?>" class="btn btn-small" style="background: #dc3545; color: white; text-decoration: none; padding: 4px 8px; border-radius: 4px; font-size: 12px;" onclick="return confirm('Are you sure you want to delete this post? This cannot be undone.');">🗑️ Delete</a>
+                            <a href="/posts/edit_post.php?id=<?php echo $post['id']; ?>" class="btn btn-small" style="background: #ffc107; color: black; text-decoration: none; padding: 4px 8px; border-radius: 4px; font-size: 12px;">✏️ Edit</a>
+                            <a href="/posts/delete_post.php?id=<?php echo $post['id']; ?>" class="btn btn-small" style="background: #dc3545; color: white; text-decoration: none; padding: 4px 8px; border-radius: 4px; font-size: 12px;" onclick="return confirm('Are you sure you want to delete this post? This cannot be undone.');">🗑️ Delete</a>
                         </div>
                     <?php endif; ?>
                 </div>

@@ -309,7 +309,7 @@ include __DIR__ . '/../includes/header.php';
             <span>></span>
             <span><?php echo htmlspecialchars($post['category_name']); ?></span>
             <span>></span>
-            <a href="subcategory.php?id=<?php echo $post['subcategory_id']; ?>"><?php echo htmlspecialchars($post['subcategory_name']); ?></a>
+            <a href="/categories/subcategory.php?id=<?php echo $post['subcategory_id']; ?>"><?php echo htmlspecialchars($post['subcategory_name']); ?></a>
             <span>></span>
             <span class="current"><?php echo htmlspecialchars($post['title']); ?></span>
         </div>

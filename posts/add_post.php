@@ -253,7 +253,7 @@ include __DIR__ . '/../includes/header.php';
             <span>></span>
             <span><?php echo htmlspecialchars($subcategory['category_name']); ?></span>
             <span>></span>
-            <a href="subcategory.php?id=<?php echo $subcategory_id; ?>"><?php echo htmlspecialchars($subcategory['name']); ?></a>
+            <a href="/categories/subcategory.php?id=<?php echo $subcategory_id; ?>"><?php echo htmlspecialchars($subcategory['name']); ?></a>
             <span>></span>
             <span class="current">Add Post</span>
         </div>
@@ -395,7 +395,7 @@ include __DIR__ . '/../includes/header.php';
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-success">Create Post</button>
-                    <a href="subcategory.php?id=<?php echo $subcategory_id; ?>" class="btn btn-secondary">Cancel</a>
+                    <a href="/categories/subcategory.php?id=<?php echo $subcategory_id; ?>" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>
         </div>
