@@ -51,6 +51,21 @@
                 <!-- Latest Updates Panel -->
                 <div id="latestUpdatesPanel" class="updates-panel active">
                     <div class="updates-list">
+                        <!-- File Structure Overhaul + FTP -->
+                        <div class="update-item">
+                            <div class="update-version">Side Update</div>
+                            <div class="update-title">File structure cleanup + FTP</div>
+                            <div class="update-features">
+                                <div class="feature-item">⚠️ Most links are fixed but some may slip through the cracks ⚠️</div>
+                                <div class="feature-item">- Cleaned up the project file system to not be spaghetti</div>
+                                <div class="feature-item">- Integrated FTP into GitHub for automatic deployment</div>
+                                <br>
+                                <div class="feature-item">Still to do:</div>
+                                <div class="feature-item">- Ability for admins to do training</div>
+                                <div class="feature-item">- Test training course management improvements</div>
+                            </div>
+                            <div class="update-date">2025-11-13</div>
+                        </div>
                         <!-- Version 2.5.3 -->
                         <div class="update-item">
                             <div class="update-version">v2.5.3</div>
@@ -149,7 +164,7 @@
 
                         <div class="roadmap-section">
                             <div class="roadmap-label roadmap-label-next">Next</div>
-                            <div class="update-version">v2.6.0</div>
+                            <div class="update-version">v2.7.0</div>
                             <ul>
                                 <li>Departments – department-based visibility</li>
                                 <li>Admin-friendly training management improvements</li>
@@ -160,9 +175,8 @@
                             <div class="roadmap-label roadmap-label-later">Later</div>
                             <div class="update-version">v2.7.0+</div>
                             <ul>
-                                <li>2.7.0 Retest periods - For knowledge rentention</li>
-                                <li>2.8.0 Email functionality - Notifying managers / users about training</li>
-                                <li>2.9.0 File clean-up</li>
+                                <li>2.8.0 Retest periods - For knowledge rentention</li>
+                                <li>2.9.0 Email functionality - Notifying managers / users about training</li>
                                 <li>3.0.0 Landing page overhaul - Menu for different programs</li>
                                 <li>4.0.0 🤫</li> <!-- H&S program -->
                             </ul>
