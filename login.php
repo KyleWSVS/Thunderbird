@@ -10,13 +10,19 @@
  * - Proper session management and brute force protection
  */
 
-// Load application configuration with robust path handling
+// Load application configuration with robust path handling and fallback
 $config_path = __DIR__ . '/config.php';
-if (!file_exists($config_path)) {
-    error_log('Configuration file missing at ' . $config_path);
+$system_config_path = __DIR__ . '/system/config.php';
+
+if (file_exists($config_path)) {
+    require_once $config_path;
+} elseif (file_exists($system_config_path)) {
+    // Fallback in case the top-level config.php is missing from deployment
+    require_once $system_config_path;
+} else {
+    error_log('Configuration file missing at ' . $config_path . ' and ' . $system_config_path);
     exit('Configuration error. Please contact support.');
 }
-require_once $config_path;
 session_start();
 if (isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true) {
     if (time() - $_SESSION['login_time'] <= SESSION_TIMEOUT) {
