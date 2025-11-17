@@ -1,5 +1,8 @@
 <?php
 /**
+
+
+TEST TEST TEST AUTO DEPLOY
  * Home Page - Categories and Subcategories Display
  * Fixed version without PHP references to eliminate duplication issues
  * Last updated: 2025-11-03 (Subcategory visibility controls added)
