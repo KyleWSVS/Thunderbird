@@ -1,7 +1,6 @@
-// system/config.php
+<?php
 require_once __DIR__ . '/bootstrap.php';
 
-<?php
 /**
  * Application Configuration
  * Contains database settings, users, and global constants
@@ -10,7 +9,6 @@ require_once __DIR__ . '/bootstrap.php';
  * FIXED: Removed all hardcoded user references that were interfering with database authentication
  * - Disabled $GLOBALS['USERS'] array completely
  * - System now fully database-driven for user management
- * - Resolved issue where PIN changes weren't working due to hardcoded fallback
  */
 
 define('DB_HOST', 'sql100.infinityfree.com');
