@@ -173,6 +173,14 @@ if (!$attempt) {
     $total_points   = isset($attempt['total_points'])  ? floatval($attempt['total_points'])  : 0.0;
     $display_score  = ($total_points > 0) ? round(($earned_points / $total_points) * 100) : 0;
 
+    $completed_at_display = 'Not completed yet';
+    if (!empty($attempt['completed_at'])) {
+        $completed_ts = strtotime($attempt['completed_at']);
+        if ($completed_ts) {
+            $completed_at_display = date('M j, Y \a\t g:i A', $completed_ts);
+        }
+    }
+
     // Optional: keep $attempt['score'] consistent for the rest of the template
     if ($display_score > 0 && (empty($attempt['score']) || intval($attempt['score']) === 0)) {
         $attempt['score'] = $display_score;
@@ -701,7 +709,7 @@ include __DIR__ . '/../includes/header.php';
                 </div>
                 <div class="quiz-info-item">
                     <div class="quiz-info-label">Completed</div>
-                    <div class="quiz-info-value"><?php echo date('M j, Y \a\t g:i A', strtotime($attempt['completed_at'])); ?></div>
+                    <div class="quiz-info-value"><?php echo $completed_at_display; ?></div>
                 </div>
             </div>
         </div>
