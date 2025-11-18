@@ -26,6 +26,14 @@ $include_content = isset($_GET['include_content']) ? true : true; // Default to 
 
 $results = [];
 $search_performed = false;
+$use_fulltext = true;
+
+// Check if FULLTEXT search is supported; fall back to LIKE when unavailable
+try {
+    $pdo->query("SELECT MATCH(name) AGAINST('test') as relevance FROM categories LIMIT 1");
+} catch (PDOException $e) {
+    $use_fulltext = false;
+}
 
 // Build date filter
 $date_filter = '';
@@ -99,41 +107,79 @@ if (!empty($search_query)) {
         $search_categories = ($search_in === 'all' || $search_in === 'categories');
 
         // Search Categories (with visibility filtering)
+        $like_query = '%' . $search_query . '%';
+
         if ($is_super_user) {
             // Super Admins see all categories including it_only
-            $category_search = $pdo->prepare("
-                SELECT id, name, icon, 'category' as type, visibility,
-                       MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
-                FROM categories
-                WHERE MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)
-                ORDER BY relevance DESC
-            ");
-            $category_search->execute([$search_query, $search_query]);
+            if ($use_fulltext) {
+                $category_search = $pdo->prepare("
+                    SELECT id, name, icon, 'category' as type, visibility,
+                           MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
+                    FROM categories
+                    WHERE MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)
+                    ORDER BY relevance DESC
+                ");
+                $category_search->execute([$search_query, $search_query]);
+            } else {
+                $category_search = $pdo->prepare("
+                    SELECT id, name, icon, 'category' as type, visibility,
+                           (CASE WHEN name LIKE ? THEN 1 ELSE 0 END) as relevance
+                    FROM categories
+                    WHERE name LIKE ?
+                    ORDER BY name ASC
+                ");
+                $category_search->execute([$like_query, $like_query]);
+            }
             $categories = $category_search->fetchAll();
         } elseif (is_admin()) {
             // Normal Admins see all categories except it_only
-            $category_search = $pdo->prepare("
-                SELECT id, name, icon, 'category' as type, visibility,
-                       MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
-                FROM categories
-                WHERE visibility != 'it_only'
-                AND MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)
-                ORDER BY relevance DESC
-            ");
-            $category_search->execute([$search_query, $search_query]);
+            if ($use_fulltext) {
+                $category_search = $pdo->prepare("
+                    SELECT id, name, icon, 'category' as type, visibility,
+                           MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
+                    FROM categories
+                    WHERE visibility != 'it_only'
+                    AND MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)
+                    ORDER BY relevance DESC
+                ");
+                $category_search->execute([$search_query, $search_query]);
+            } else {
+                $category_search = $pdo->prepare("
+                    SELECT id, name, icon, 'category' as type, visibility,
+                           (CASE WHEN name LIKE ? THEN 1 ELSE 0 END) as relevance
+                    FROM categories
+                    WHERE visibility != 'it_only'
+                    AND name LIKE ?
+                    ORDER BY name ASC
+                ");
+                $category_search->execute([$like_query, $like_query]);
+            }
             $categories = $category_search->fetchAll();
         } else {
             // Regular users only see accessible categories
-            $category_search = $pdo->prepare("
-                SELECT id, name, icon, 'category' as type, visibility,
-                       MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
-                FROM categories
-                WHERE (visibility = 'public'
-                       OR (visibility = 'restricted' AND (allowed_users LIKE ? OR allowed_users IS NULL)))
-                AND MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)
-                ORDER BY relevance DESC
-            ");
-            $category_search->execute([$search_query, '%"' . $current_user_id . '"%', $search_query]);
+            if ($use_fulltext) {
+                $category_search = $pdo->prepare("
+                    SELECT id, name, icon, 'category' as type, visibility,
+                           MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
+                    FROM categories
+                    WHERE (visibility = 'public'
+                           OR (visibility = 'restricted' AND (allowed_users LIKE ? OR allowed_users IS NULL)))
+                    AND MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)
+                    ORDER BY relevance DESC
+                ");
+                $category_search->execute([$search_query, '%"' . $current_user_id . '"%', $search_query]);
+            } else {
+                $category_search = $pdo->prepare("
+                    SELECT id, name, icon, 'category' as type, visibility,
+                           (CASE WHEN name LIKE ? THEN 1 ELSE 0 END) as relevance
+                    FROM categories
+                    WHERE (visibility = 'public'
+                           OR (visibility = 'restricted' AND (allowed_users LIKE ? OR allowed_users IS NULL)))
+                    AND name LIKE ?
+                    ORDER BY name ASC
+                ");
+                $category_search->execute([$like_query, '%"' . $current_user_id . '"%', $like_query]);
+            }
             $categories = $category_search->fetchAll();
         }
 
@@ -150,7 +196,7 @@ if (!empty($search_query)) {
         // Search Subcategories (with visibility filtering)
         if ($is_super_user) {
             // Super Admins can see all subcategories including it_only
-            if ($subcategory_visibility_columns_exist) {
+            if ($subcategory_visibility_columns_exist && $use_fulltext) {
                 $subcategory_search = $pdo->prepare("
                     SELECT s.id, s.name, s.category_id, c.name as category_name, c.icon as category_icon,
                            'subcategory' as type, COUNT(p.id) as post_count, s.visibility,
@@ -162,7 +208,8 @@ if (!empty($search_query)) {
                     GROUP BY s.id
                     ORDER BY relevance DESC
                 ");
-            } else {
+                $subcategory_search->execute([$search_query, $search_query]);
+            } elseif ($use_fulltext) {
                 $subcategory_search = $pdo->prepare("
                     SELECT s.id, s.name, s.category_id, c.name as category_name, c.icon as category_icon,
                            'subcategory' as type, COUNT(p.id) as post_count,
@@ -174,12 +221,38 @@ if (!empty($search_query)) {
                     GROUP BY s.id
                     ORDER BY relevance DESC
                 ");
+                $subcategory_search->execute([$search_query, $search_query]);
+            } elseif ($subcategory_visibility_columns_exist) {
+                $subcategory_search = $pdo->prepare("
+                    SELECT s.id, s.name, s.category_id, c.name as category_name, c.icon as category_icon,
+                           'subcategory' as type, COUNT(p.id) as post_count, s.visibility,
+                           (CASE WHEN s.name LIKE ? THEN 1 ELSE 0 END) as relevance
+                    FROM subcategories s
+                    JOIN categories c ON s.category_id = c.id
+                    LEFT JOIN posts p ON s.id = p.subcategory_id
+                    WHERE s.name LIKE ?
+                    GROUP BY s.id
+                    ORDER BY s.name ASC
+                ");
+                $subcategory_search->execute([$like_query, $like_query]);
+            } else {
+                $subcategory_search = $pdo->prepare("
+                    SELECT s.id, s.name, s.category_id, c.name as category_name, c.icon as category_icon,
+                           'subcategory' as type, COUNT(p.id) as post_count,
+                           (CASE WHEN s.name LIKE ? THEN 1 ELSE 0 END) as relevance
+                    FROM subcategories s
+                    JOIN categories c ON s.category_id = c.id
+                    LEFT JOIN posts p ON s.id = p.subcategory_id
+                    WHERE s.name LIKE ?
+                    GROUP BY s.id
+                    ORDER BY s.name ASC
+                ");
+                $subcategory_search->execute([$like_query, $like_query]);
             }
-            $subcategory_search->execute([$search_query, $search_query]);
             $subcategories = $subcategory_search->fetchAll();
         } elseif (is_admin()) {
             // Normal Admins can see all subcategories except it_only
-            if ($subcategory_visibility_columns_exist) {
+            if ($subcategory_visibility_columns_exist && $use_fulltext) {
                 $subcategory_search = $pdo->prepare("
                     SELECT s.id, s.name, s.category_id, c.name as category_name, c.icon as category_icon,
                            'subcategory' as type, COUNT(p.id) as post_count, s.visibility,
@@ -192,7 +265,8 @@ if (!empty($search_query)) {
                     GROUP BY s.id
                     ORDER BY relevance DESC
                 ");
-            } else {
+                $subcategory_search->execute([$search_query, $search_query]);
+            } elseif ($use_fulltext) {
                 $subcategory_search = $pdo->prepare("
                     SELECT s.id, s.name, s.category_id, c.name as category_name, c.icon as category_icon,
                            'subcategory' as type, COUNT(p.id) as post_count,
@@ -204,12 +278,39 @@ if (!empty($search_query)) {
                     GROUP BY s.id
                     ORDER BY relevance DESC
                 ");
+                $subcategory_search->execute([$search_query, $search_query]);
+            } elseif ($subcategory_visibility_columns_exist) {
+                $subcategory_search = $pdo->prepare("
+                    SELECT s.id, s.name, s.category_id, c.name as category_name, c.icon as category_icon,
+                           'subcategory' as type, COUNT(p.id) as post_count, s.visibility,
+                           (CASE WHEN s.name LIKE ? THEN 1 ELSE 0 END) as relevance
+                    FROM subcategories s
+                    JOIN categories c ON s.category_id = c.id
+                    LEFT JOIN posts p ON s.id = p.subcategory_id
+                    WHERE s.visibility != 'it_only' AND c.visibility != 'it_only'
+                    AND s.name LIKE ?
+                    GROUP BY s.id
+                    ORDER BY s.name ASC
+                ");
+                $subcategory_search->execute([$like_query, $like_query]);
+            } else {
+                $subcategory_search = $pdo->prepare("
+                    SELECT s.id, s.name, s.category_id, c.name as category_name, c.icon as category_icon,
+                           'subcategory' as type, COUNT(p.id) as post_count,
+                           (CASE WHEN s.name LIKE ? THEN 1 ELSE 0 END) as relevance
+                    FROM subcategories s
+                    JOIN categories c ON s.category_id = c.id
+                    LEFT JOIN posts p ON s.id = p.subcategory_id
+                    WHERE s.name LIKE ?
+                    GROUP BY s.id
+                    ORDER BY s.name ASC
+                ");
+                $subcategory_search->execute([$like_query, $like_query]);
             }
-            $subcategory_search->execute([$search_query, $search_query]);
             $subcategories = $subcategory_search->fetchAll();
         } else {
             // Regular users can only see accessible subcategories
-            if ($subcategory_visibility_columns_exist) {
+            if ($subcategory_visibility_columns_exist && $use_fulltext) {
                 $subcategory_search = $pdo->prepare("
                     SELECT s.id, s.name, s.category_id, c.name as category_name, c.icon as category_icon,
                            'subcategory' as type, COUNT(DISTINCT p.id) as post_count, s.visibility,
@@ -226,7 +327,7 @@ if (!empty($search_query)) {
                     ORDER BY relevance DESC
                 ");
                 $subcategory_search->execute([$search_query, '%"' . $current_user_id . '"%', '%"' . $current_user_id . '"%', $search_query]);
-            } else {
+            } elseif ($subcategory_visibility_columns_exist) {
                 $subcategory_search = $pdo->prepare("
                     SELECT s.id, s.name, s.category_id, c.name as category_name, c.icon as category_icon,
                            'subcategory' as type, COUNT(DISTINCT p.id) as post_count,
@@ -241,6 +342,38 @@ if (!empty($search_query)) {
                     ORDER BY relevance DESC
                 ");
                 $subcategory_search->execute([$search_query, '%"' . $current_user_id . '"%', $search_query]);
+            } elseif ($subcategory_visibility_columns_exist) {
+                $subcategory_search = $pdo->prepare("
+                    SELECT s.id, s.name, s.category_id, c.name as category_name, c.icon as category_icon,
+                           'subcategory' as type, COUNT(DISTINCT p.id) as post_count, s.visibility,
+                           (CASE WHEN s.name LIKE ? THEN 1 ELSE 0 END) as relevance
+                    FROM subcategories s
+                    JOIN categories c ON s.category_id = c.id
+                    LEFT JOIN posts p ON s.id = p.subcategory_id
+                    WHERE (c.visibility = 'public'
+                           OR (c.visibility = 'restricted' AND (c.allowed_users LIKE ? OR c.allowed_users IS NULL)))
+                    AND (s.visibility = 'public'
+                         OR (s.visibility = 'restricted' AND (s.allowed_users LIKE ? OR s.allowed_users IS NULL)))
+                    AND s.name LIKE ?
+                    GROUP BY s.id
+                    ORDER BY s.name ASC
+                ");
+                $subcategory_search->execute([$like_query, '%"' . $current_user_id . '"%', '%"' . $current_user_id . '"%', $like_query]);
+            } else {
+                $subcategory_search = $pdo->prepare("
+                    SELECT s.id, s.name, s.category_id, c.name as category_name, c.icon as category_icon,
+                           'subcategory' as type, COUNT(DISTINCT p.id) as post_count,
+                           (CASE WHEN s.name LIKE ? THEN 1 ELSE 0 END) as relevance
+                    FROM subcategories s
+                    JOIN categories c ON s.category_id = c.id
+                    LEFT JOIN posts p ON s.id = p.subcategory_id
+                    WHERE (c.visibility = 'public'
+                           OR (c.visibility = 'restricted' AND (c.allowed_users LIKE ? OR c.allowed_users IS NULL)))
+                    AND s.name LIKE ?
+                    GROUP BY s.id
+                    ORDER BY s.name ASC
+                ");
+                $subcategory_search->execute([$like_query, '%"' . $current_user_id . '"%', $like_query]);
             }
             $subcategories = $subcategory_search->fetchAll();
         }
@@ -248,46 +381,79 @@ if (!empty($search_query)) {
         // Search Posts (with visibility filtering)
         if ($is_super_user) {
             // Super Admins can see all posts including it_only
-            $post_search = $pdo->prepare("
-                SELECT p.id, p.title, p.subcategory_id, p.user_id, p.created_at, p.privacy,
-                       s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
-                       'post' as type,
-                       (MATCH(p.title) AGAINST(? IN NATURAL LANGUAGE MODE) * 2) +
-                       MATCH(p.title) AGAINST(? IN NATURAL LANGUAGE MODE) +
-                       MATCH(p.content) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
-                FROM posts p
-                JOIN subcategories s ON p.subcategory_id = s.id
-                JOIN categories c ON s.category_id = c.id
-                WHERE (MATCH(p.title) AGAINST(? IN NATURAL LANGUAGE MODE) OR
-                       MATCH(p.content) AGAINST(? IN NATURAL LANGUAGE MODE))
-                ORDER BY relevance DESC, p.created_at DESC
-                LIMIT 50
-            ");
-            $post_search->execute([$search_query, $search_query, $search_query, $search_query, $search_query]);
+            if ($use_fulltext) {
+                $post_search = $pdo->prepare("
+                    SELECT p.id, p.title, p.subcategory_id, p.user_id, p.created_at, p.privacy,
+                           s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
+                           'post' as type,
+                           (MATCH(p.title) AGAINST(? IN NATURAL LANGUAGE MODE) * 2) +
+                           MATCH(p.title) AGAINST(? IN NATURAL LANGUAGE MODE) +
+                           MATCH(p.content) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
+                    FROM posts p
+                    JOIN subcategories s ON p.subcategory_id = s.id
+                    JOIN categories c ON s.category_id = c.id
+                    WHERE (MATCH(p.title) AGAINST(? IN NATURAL LANGUAGE MODE) OR
+                           MATCH(p.content) AGAINST(? IN NATURAL LANGUAGE MODE))
+                    ORDER BY relevance DESC, p.created_at DESC
+                    LIMIT 50
+                ");
+                $post_search->execute([$search_query, $search_query, $search_query, $search_query, $search_query]);
+            } else {
+                $post_search = $pdo->prepare("
+                    SELECT p.id, p.title, p.subcategory_id, p.user_id, p.created_at, p.privacy,
+                           s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
+                           'post' as type,
+                           (CASE WHEN p.title LIKE ? OR p.content LIKE ? THEN 1 ELSE 0 END) as relevance
+                    FROM posts p
+                    JOIN subcategories s ON p.subcategory_id = s.id
+                    JOIN categories c ON s.category_id = c.id
+                    WHERE (p.title LIKE ? OR p.content LIKE ?)
+                    ORDER BY relevance DESC, p.created_at DESC
+                    LIMIT 50
+                ");
+                $post_search->execute([$like_query, $like_query, $like_query, $like_query]);
+            }
             $posts = $post_search->fetchAll();
         } elseif (is_admin()) {
             // Normal Admins can see all posts except it_only
-            $post_search = $pdo->prepare("
-                SELECT p.id, p.title, p.subcategory_id, p.user_id, p.created_at, p.privacy,
-                       s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
-                       'post' as type,
-                       (MATCH(p.title) AGAINST(? IN NATURAL LANGUAGE MODE) * 2) +
-                       MATCH(p.title) AGAINST(? IN NATURAL LANGUAGE MODE) +
-                       MATCH(p.content) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
-                FROM posts p
-                JOIN subcategories s ON p.subcategory_id = s.id
-                JOIN categories c ON s.category_id = c.id
-                WHERE p.privacy != 'it_only' AND s.visibility != 'it_only' AND c.visibility != 'it_only'
-                AND (MATCH(p.title) AGAINST(? IN NATURAL LANGUAGE MODE) OR
-                     MATCH(p.content) AGAINST(? IN NATURAL LANGUAGE MODE))
-                ORDER BY relevance DESC, p.created_at DESC
-                LIMIT 50
-            ");
-            $post_search->execute([$search_query, $search_query, $search_query, $search_query, $search_query]);
+            if ($use_fulltext) {
+                $post_search = $pdo->prepare("
+                    SELECT p.id, p.title, p.subcategory_id, p.user_id, p.created_at, p.privacy,
+                           s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
+                           'post' as type,
+                           (MATCH(p.title) AGAINST(? IN NATURAL LANGUAGE MODE) * 2) +
+                           MATCH(p.title) AGAINST(? IN NATURAL LANGUAGE MODE) +
+                           MATCH(p.content) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
+                    FROM posts p
+                    JOIN subcategories s ON p.subcategory_id = s.id
+                    JOIN categories c ON s.category_id = c.id
+                    WHERE p.privacy != 'it_only' AND s.visibility != 'it_only' AND c.visibility != 'it_only'
+                    AND (MATCH(p.title) AGAINST(? IN NATURAL LANGUAGE MODE) OR
+                         MATCH(p.content) AGAINST(? IN NATURAL LANGUAGE MODE))
+                    ORDER BY relevance DESC, p.created_at DESC
+                    LIMIT 50
+                ");
+                $post_search->execute([$search_query, $search_query, $search_query, $search_query, $search_query]);
+            } else {
+                $post_search = $pdo->prepare("
+                    SELECT p.id, p.title, p.subcategory_id, p.user_id, p.created_at, p.privacy,
+                           s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
+                           'post' as type,
+                           (CASE WHEN p.title LIKE ? OR p.content LIKE ? THEN 1 ELSE 0 END) as relevance
+                    FROM posts p
+                    JOIN subcategories s ON p.subcategory_id = s.id
+                    JOIN categories c ON s.category_id = c.id
+                    WHERE p.privacy != 'it_only' AND s.visibility != 'it_only' AND c.visibility != 'it_only'
+                    AND (p.title LIKE ? OR p.content LIKE ?)
+                    ORDER BY relevance DESC, p.created_at DESC
+                    LIMIT 50
+                ");
+                $post_search->execute([$like_query, $like_query, $like_query, $like_query]);
+            }
             $posts = $post_search->fetchAll();
         } else {
             // Regular users can only see accessible posts
-            if ($subcategory_visibility_columns_exist) {
+            if ($subcategory_visibility_columns_exist && $use_fulltext) {
                 $post_search = $pdo->prepare("
                     SELECT p.id, p.title, p.subcategory_id, p.user_id, p.created_at, p.privacy,
                            s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
@@ -318,14 +484,40 @@ if (!empty($search_query)) {
                     '%"' . $current_user_id . '"%',
                     $search_query, $search_query
                 ]);
+            } elseif ($subcategory_visibility_columns_exist) {
+                $post_search = $pdo->prepare("
+                    SELECT p.id, p.title, p.subcategory_id, p.user_id, p.created_at, p.privacy,
+                           s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
+                           'post' as type,
+                           (CASE WHEN p.title LIKE ? OR p.content LIKE ? THEN 1 ELSE 0 END) as relevance
+                    FROM posts p
+                    JOIN subcategories s ON p.subcategory_id = s.id
+                    JOIN categories c ON s.category_id = c.id
+                    WHERE (c.visibility = 'public'
+                           OR (c.visibility = 'restricted' AND (c.allowed_users LIKE ? OR c.allowed_users IS NULL)))
+                    AND (s.visibility = 'public'
+                         OR (s.visibility = 'restricted' AND (s.allowed_users LIKE ? OR s.allowed_users IS NULL)))
+                    AND (p.privacy = 'public'
+                         OR p.user_id = ?
+                         OR (p.privacy = 'shared' AND p.shared_with LIKE ?))
+                    AND (p.title LIKE ? OR p.content LIKE ?)
+                    ORDER BY relevance DESC, p.created_at DESC
+                    LIMIT 50
+                ");
+                $post_search->execute([
+                    $like_query, $like_query,
+                    '%"' . $current_user_id . '"%',
+                    '%"' . $current_user_id . '"%',
+                    $current_user_id,
+                    '%"' . $current_user_id . '"%',
+                    $like_query, $like_query
+                ]);
             } else {
                 $post_search = $pdo->prepare("
                     SELECT p.id, p.title, p.subcategory_id, p.user_id, p.created_at, p.privacy,
                            s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
                            'post' as type,
-                           (MATCH(p.title) AGAINST(? IN NATURAL LANGUAGE MODE) * 2) +
-                       MATCH(p.title) AGAINST(? IN NATURAL LANGUAGE MODE) +
-                       MATCH(p.content) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
+                           (CASE WHEN p.title LIKE ? OR p.content LIKE ? THEN 1 ELSE 0 END) as relevance
                     FROM posts p
                     JOIN subcategories s ON p.subcategory_id = s.id
                     JOIN categories c ON s.category_id = c.id
@@ -334,17 +526,16 @@ if (!empty($search_query)) {
                     AND (p.privacy = 'public'
                          OR p.user_id = ?
                          OR (p.privacy = 'shared' AND p.shared_with LIKE ?))
-                    AND (MATCH(p.title) AGAINST(? IN NATURAL LANGUAGE MODE) OR
-                         MATCH(p.content) AGAINST(? IN NATURAL LANGUAGE MODE))
+                    AND (p.title LIKE ? OR p.content LIKE ?)
                     ORDER BY relevance DESC, p.created_at DESC
                     LIMIT 50
                 ");
                 $post_search->execute([
-                    $search_query, $search_query, $search_query,
+                    $like_query, $like_query,
                     '%"' . $current_user_id . '"%',
                     $current_user_id,
                     '%"' . $current_user_id . '"%',
-                    $search_query, $search_query
+                    $like_query, $like_query
                 ]);
             }
             $posts = $post_search->fetchAll();
@@ -353,44 +544,81 @@ if (!empty($search_query)) {
         // Search Replies (with visibility filtering)
         if ($is_super_user) {
             // Super Admins can see all replies including it_only
-            $reply_search = $pdo->prepare("
-                SELECT r.id, r.post_id, r.user_id, r.created_at,
-                       p.title as post_title, p.subcategory_id,
-                       s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
-                       'reply' as type,
-                       MATCH(r.content) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
-                FROM replies r
-                JOIN posts p ON r.post_id = p.id
-                JOIN subcategories s ON p.subcategory_id = s.id
-                JOIN categories c ON s.category_id = c.id
-                WHERE MATCH(r.content) AGAINST(? IN NATURAL LANGUAGE MODE)
-                ORDER BY relevance DESC, r.created_at DESC
-                LIMIT 50
-            ");
-            $reply_search->execute([$search_query, $search_query]);
+            if ($use_fulltext) {
+                $reply_search = $pdo->prepare("
+                    SELECT r.id, r.post_id, r.user_id, r.created_at,
+                           p.title as post_title, p.subcategory_id,
+                           s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
+                           'reply' as type,
+                           MATCH(r.content) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
+                    FROM replies r
+                    JOIN posts p ON r.post_id = p.id
+                    JOIN subcategories s ON p.subcategory_id = s.id
+                    JOIN categories c ON s.category_id = c.id
+                    WHERE MATCH(r.content) AGAINST(? IN NATURAL LANGUAGE MODE)
+                    ORDER BY relevance DESC, r.created_at DESC
+                    LIMIT 50
+                ");
+                $reply_search->execute([$search_query, $search_query]);
+            } else {
+                $reply_search = $pdo->prepare("
+                    SELECT r.id, r.post_id, r.user_id, r.created_at,
+                           p.title as post_title, p.subcategory_id,
+                           s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
+                           'reply' as type,
+                           (CASE WHEN r.content LIKE ? THEN 1 ELSE 0 END) as relevance
+                    FROM replies r
+                    JOIN posts p ON r.post_id = p.id
+                    JOIN subcategories s ON p.subcategory_id = s.id
+                    JOIN categories c ON s.category_id = c.id
+                    WHERE r.content LIKE ?
+                    ORDER BY relevance DESC, r.created_at DESC
+                    LIMIT 50
+                ");
+                $reply_search->execute([$like_query, $like_query]);
+            }
             $replies = $reply_search->fetchAll();
         } elseif (is_admin()) {
             // Normal Admins can see all replies except it_only
-            $reply_search = $pdo->prepare("
-                SELECT r.id, r.post_id, r.user_id, r.created_at,
-                       p.title as post_title, p.subcategory_id,
-                       s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
-                       'reply' as type,
-                       MATCH(r.content) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
-                FROM replies r
-                JOIN posts p ON r.post_id = p.id
-                JOIN subcategories s ON p.subcategory_id = s.id
-                JOIN categories c ON s.category_id = c.id
-                WHERE p.privacy != 'it_only' AND s.visibility != 'it_only' AND c.visibility != 'it_only'
-                AND MATCH(r.content) AGAINST(? IN NATURAL LANGUAGE MODE)
-                ORDER BY relevance DESC, r.created_at DESC
-                LIMIT 50
-            ");
-            $reply_search->execute([$search_query, $search_query]);
+            if ($use_fulltext) {
+                $reply_search = $pdo->prepare("
+                    SELECT r.id, r.post_id, r.user_id, r.created_at,
+                           p.title as post_title, p.subcategory_id,
+                           s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
+                           'reply' as type,
+                           MATCH(r.content) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
+                    FROM replies r
+                    JOIN posts p ON r.post_id = p.id
+                    JOIN subcategories s ON p.subcategory_id = s.id
+                    JOIN categories c ON s.category_id = c.id
+                    WHERE p.privacy != 'it_only' AND s.visibility != 'it_only' AND c.visibility != 'it_only'
+                    AND MATCH(r.content) AGAINST(? IN NATURAL LANGUAGE MODE)
+                    ORDER BY relevance DESC, r.created_at DESC
+                    LIMIT 50
+                ");
+                $reply_search->execute([$search_query, $search_query]);
+            } else {
+                $reply_search = $pdo->prepare("
+                    SELECT r.id, r.post_id, r.user_id, r.created_at,
+                           p.title as post_title, p.subcategory_id,
+                           s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
+                           'reply' as type,
+                           (CASE WHEN r.content LIKE ? THEN 1 ELSE 0 END) as relevance
+                    FROM replies r
+                    JOIN posts p ON r.post_id = p.id
+                    JOIN subcategories s ON p.subcategory_id = s.id
+                    JOIN categories c ON s.category_id = c.id
+                    WHERE p.privacy != 'it_only' AND s.visibility != 'it_only' AND c.visibility != 'it_only'
+                    AND r.content LIKE ?
+                    ORDER BY relevance DESC, r.created_at DESC
+                    LIMIT 50
+                ");
+                $reply_search->execute([$like_query, $like_query]);
+            }
             $replies = $reply_search->fetchAll();
         } else {
             // Regular users can only see accessible replies
-            if ($subcategory_visibility_columns_exist) {
+            if ($subcategory_visibility_columns_exist && $use_fulltext) {
                 $reply_search = $pdo->prepare("
                     SELECT r.id, r.post_id, r.user_id, r.created_at,
                            p.title as post_title, p.subcategory_id,
@@ -420,13 +648,43 @@ if (!empty($search_query)) {
                     '%"' . $current_user_id . '"%',
                     $search_query
                 ]);
+            } elseif ($subcategory_visibility_columns_exist) {
+                $reply_search = $pdo->prepare("
+                    SELECT r.id, r.post_id, r.user_id, r.created_at,
+                           p.title as post_title, p.subcategory_id,
+                           s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
+                           'reply' as type,
+                           (CASE WHEN r.content LIKE ? THEN 1 ELSE 0 END) as relevance
+                    FROM replies r
+                    JOIN posts p ON r.post_id = p.id
+                    JOIN subcategories s ON p.subcategory_id = s.id
+                    JOIN categories c ON s.category_id = c.id
+                    WHERE (c.visibility = 'public'
+                           OR (c.visibility = 'restricted' AND (c.allowed_users LIKE ? OR c.allowed_users IS NULL)))
+                    AND (s.visibility = 'public'
+                         OR (s.visibility = 'restricted' AND (s.allowed_users LIKE ? OR s.allowed_users IS NULL)))
+                    AND (p.privacy = 'public'
+                         OR p.user_id = ?
+                         OR (p.privacy = 'shared' AND p.shared_with LIKE ?))
+                    AND r.content LIKE ?
+                    ORDER BY relevance DESC, r.created_at DESC
+                    LIMIT 50
+                ");
+                $reply_search->execute([
+                    $like_query,
+                    '%"' . $current_user_id . '"%',
+                    '%"' . $current_user_id . '"%',
+                    $current_user_id,
+                    '%"' . $current_user_id . '"%',
+                    $like_query
+                ]);
             } else {
                 $reply_search = $pdo->prepare("
                     SELECT r.id, r.post_id, r.user_id, r.created_at,
                            p.title as post_title, p.subcategory_id,
                            s.name as subcategory_name, c.name as category_name, c.icon as category_icon,
                            'reply' as type,
-                           MATCH(r.content) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
+                           (CASE WHEN r.content LIKE ? THEN 1 ELSE 0 END) as relevance
                     FROM replies r
                     JOIN posts p ON r.post_id = p.id
                     JOIN subcategories s ON p.subcategory_id = s.id
@@ -436,16 +694,16 @@ if (!empty($search_query)) {
                     AND (p.privacy = 'public'
                          OR p.user_id = ?
                          OR (p.privacy = 'shared' AND p.shared_with LIKE ?))
-                    AND MATCH(r.content) AGAINST(? IN NATURAL LANGUAGE MODE)
+                    AND r.content LIKE ?
                     ORDER BY relevance DESC, r.created_at DESC
                     LIMIT 50
                 ");
                 $reply_search->execute([
-                    $search_query,
+                    $like_query,
                     '%"' . $current_user_id . '"%',
                     $current_user_id,
                     '%"' . $current_user_id . '"%',
-                    $search_query
+                    $like_query
                 ]);
             }
             $replies = $reply_search->fetchAll();
