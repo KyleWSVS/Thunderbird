@@ -123,19 +123,19 @@ elseif ($is_prod): ?>
                 <div class="user-info" style="display: flex; align-items: center; gap: 12px;">
                     <!-- Admin Notifications -->
                     <?php if (is_admin() && $pending_edit_requests > 0): ?>
-                    <a href="manage_edit_requests.php" style="display: flex; align-items: center; gap: 4px; background: #ffc107; color: #212529; padding: 4px 8px; border-radius: 12px; text-decoration: none; font-size: 11px; font-weight: 500;" title="Pending Edit Requests">
+                    <a href="/admin/manage_edit_requests.php" style="display: flex; align-items: center; gap: 4px; background: #ffc107; color: #212529; padding: 4px 8px; border-radius: 12px; text-decoration: none; font-size: 11px; font-weight: 500;" title="Pending Edit Requests">
                         <span>📝</span>
                         <span><?php echo $pending_edit_requests; ?></span>
                     </a>
                     <?php endif; ?>
                     
                     <!-- NEW: Unassigned Quizzes -->
-<?php if (is_admin() && $unassigned_quizzes > 0): ?>
-<a href="manage_quizzes.php?filter=unassigned" style="display: flex; align-items: center; gap: 4px; background: #6f42c1; color: white; padding: 4px 8px; border-radius: 12px; text-decoration: none; font-size: 11px; font-weight: 500;" title="Unassigned Quizzes">
-    <span>❗</span>
-    <span><?php echo $unassigned_quizzes; ?></span>
-</a>
-<?php endif; ?>
+                    <?php if (is_admin() && $unassigned_quizzes > 0): ?>
+                    <a href="/admin/manage_quizzes.php?filter=unassigned" style="display: flex; align-items: center; gap: 4px; background: #6f42c1; color: white; padding: 4px 8px; border-radius: 12px; text-decoration: none; font-size: 11px; font-weight: 500;" title="Unassigned Quizzes">
+                        <span>❗</span>
+                        <span><?php echo $unassigned_quizzes; ?></span>
+                    </a>
+                    <?php endif; ?>
 
                     <?php if (is_super_admin() && $unresolved_bugs > 0): ?>
                     <a href="/bugs/bug_report.php" style="display: flex; align-items: center; gap: 4px; background: #dc3545; color: white; padding: 4px 8px; border-radius: 12px; text-decoration: none; font-size: 11px; font-weight: 500;" title="Unresolved Bugs">
