@@ -558,7 +558,8 @@ if (isset($_GET['course_id']) && isset($_GET['user_id']) &&
                         $att_id      = (int)$att['id'];
                         $att_num     = (int)($att['attempt_number'] ?? 0);
                         $att_score   = (int)($att['score'] ?? 0);
-                        $att_status  = htmlspecialchars($att['status'] ?? '', ENT_QUOTES, 'UTF-8');
+                        $att_status_raw = $att['status'] ?? '';
+                        $att_status  = htmlspecialchars($att_status_raw, ENT_QUOTES, 'UTF-8');
                         $att_date    = $att['completed_at']
                             ? date('Y-m-d H:i', strtotime($att['completed_at']))
                             : '—';
@@ -567,10 +568,18 @@ if (isset($_GET['course_id']) && isset($_GET['user_id']) &&
     . "<td>{$att_num}</td>"
     . "<td>{$att_score}%</td>"
     . "<td>{$att_status}</td>"
-    . "<td>{$att_date}</td>"
-    // admin_view=1 flags that this was opened from the admin analytics page
-    . "<td><a href='/training/quiz_results.php?attempt_id=" . intval($att_id) . "&admin_view=1' class='btn btn-xs btn-primary'>View</a></td>"
-    . "</tr>";
+    . "<td>{$att_date}</td>";
+
+                        // Only expose the results link for completed attempts
+                        $status_for_button = strtolower(trim($att_status_raw));
+                        if (in_array($status_for_button, ['passed', 'failed'], true)) {
+                            // admin_view=1 flags that this was opened from the admin analytics page
+                            $attempts_html .= "<td><a href='/training/quiz_results.php?attempt_id=" . intval($att_id) . "&admin_view=1' class='btn btn-xs btn-primary'>View</a></td>";
+                        } else {
+                            $attempts_html .= "<td>—</td>";
+                        }
+
+                        $attempts_html .= "</tr>";
 
                     }
 
