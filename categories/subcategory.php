@@ -283,7 +283,7 @@ include __DIR__ . '/../includes/header.php';
     <?php
     require_once __DIR__ . '/../includes/search_widget.php';
     // Point to your known-good endpoint that works like index:
-    render_search_bar('search_working.php');
+    render_search_bar();
     ?>
 
     <script>

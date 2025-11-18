@@ -2,11 +2,11 @@
 /**
  * Reusable Search Widget
  * Usage: require_once __DIR__ . '/includes/search_widget.php'; render_search_bar();
- * Optional: render_search_bar($actionPath = 'search_working.php')
+ * Optional: render_search_bar($actionPath = 'search.php')
  */
 
 if (!function_exists('render_search_bar')) {
-    function render_search_bar($actionPath = '/search/search_working.php') {
+    function render_search_bar($actionPath = '/search/search.php') {
         // Guard to only print JS/CSS once per request
         static $SVS_SEARCH_WIDGET_LOADED = false;
 

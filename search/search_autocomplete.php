@@ -435,7 +435,7 @@ try {
         switch ($result['type']) {
             case 'category':
                 // For categories, we'll use a simple search that matches the category name exactly
-                $formatted_result['url'] = 'search_working.php?q=' . urlencode($result['name']);
+                $formatted_result['url'] = '/search/search.php?q=' . urlencode($result['name']);
                 $formatted_result['subtitle'] = 'Category';
                 break;
             case 'subcategory':
