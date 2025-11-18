@@ -398,8 +398,8 @@ include 'includes/header.php';
 <div class="container">
     <?php
         // One-liner search bar (same behavior everywhere).
-        // Uses search_autocomplete.php and submits to search_working.php
-        render_search_bar('search_working.php');
+        // Uses search_autocomplete.php and submits to /search/search.php
+        render_search_bar();
     ?>
 
     <div class="flex-between mb-20">

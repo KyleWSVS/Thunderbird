@@ -484,13 +484,13 @@ include __DIR__ . '/../includes/header.php';
 
     <!-- Search Form -->
     <div class="card" style="margin-bottom: 20px;">
-        <form method="GET" action="search.php" style="display: flex; gap: 10px;">
+        <form method="GET" action="/search/search.php" style="display: flex; gap: 10px;">
             <input
                 type="text"
                 name="q"
                 class="form-input"
                 value="<?php echo htmlspecialchars($search_query); ?>"
-                placeholder="OLD OLD OLD PLZ SWITCH TO search_working.php"
+                placeholder="Search posts, categories, and subcategories"
                 style="flex: 1; margin: 0;"
                 autofocus
             >
