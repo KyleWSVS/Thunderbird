@@ -135,9 +135,10 @@ if ($training_tables_exist && $course) {
 
         // Get content count
         $stmt = $pdo->prepare("
-            SELECT COUNT(*) as content_items
+            SELECT COUNT(DISTINCT content_id) as content_items
             FROM training_course_content
             WHERE course_id = ?
+              AND (content_type = 'post' OR content_type IS NULL OR content_type = '')
         ");
         $stmt->execute([$course_id]);
         $content_stats = $stmt->fetch(PDO::FETCH_ASSOC);
