@@ -511,54 +511,66 @@ include __DIR__ . '/../includes/header.php';
         <?php else: ?>
             <!-- Create New Course Form -->
             <div class="card-content" style="padding: 20px; border-bottom: 1px solid #dee2e6;">
-                <h3 style="margin: 0 0 16px 0; color: #495057;">➕ Create New Training Course</h3>
-                <form method="POST" action="manage_training_courses.php" style="margin: 0;">
-                    <input type="hidden" name="action" value="create_course">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                    <h3 style="margin: 0; color: #495057;">➕ Create New Training Course</h3>
+                    <button
+                        type="button"
+                        id="toggleCreateCourse"
+                        style="background: #f8f9fa; color: #495057; border: 1px solid #ced4da; padding: 8px 12px; border-radius: 4px; font-size: 13px; cursor: pointer; min-width: 120px;"
+                    >
+                        Show Form ▾
+                    </button>
+                </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                        <div>
-                            <label style="display: block; margin-bottom: 4px; font-weight: 500; color: #495057;">
-                                Course Name <span style="color: #dc3545;">*</span>
-                            </label>
-                            <input type="text" name="name" required maxlength="255"
-                                   style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;"
-                                   placeholder="e.g., New Employee Orientation">
+                <div id="createCoursePanel" style="margin-top: 16px; display: none;">
+                    <form method="POST" action="manage_training_courses.php" style="margin: 0;">
+                        <input type="hidden" name="action" value="create_course">
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 4px; font-weight: 500; color: #495057;">
+                                    Course Name <span style="color: #dc3545;">*</span>
+                                </label>
+                                <input type="text" name="name" required maxlength="255"
+                                       style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;"
+                                       placeholder="e.g., New Employee Orientation">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 4px; font-weight: 500; color: #495057;">
+                                    Department
+                                </label>
+                                <input type="text" name="department" maxlength="100"
+                                       style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;"
+                                       placeholder="e.g., Human Resources">
+                            </div>
                         </div>
-                        <div>
+
+                        <div style="margin-bottom: 16px;">
                             <label style="display: block; margin-bottom: 4px; font-weight: 500; color: #495057;">
-                                Department
+                                Description
                             </label>
-                            <input type="text" name="department" maxlength="100"
-                                   style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;"
-                                   placeholder="e.g., Human Resources">
+                            <textarea name="description" rows="3" maxlength="1000"
+                                      style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; resize: vertical;"
+                                      placeholder="Course description and objectives..."></textarea>
                         </div>
-                    </div>
 
-                    <div style="margin-bottom: 16px;">
-                        <label style="display: block; margin-bottom: 4px; font-weight: 500; color: #495057;">
-                            Description
-                        </label>
-                        <textarea name="description" rows="3" maxlength="1000"
-                                  style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; resize: vertical;"
-                                  placeholder="Course description and objectives..."></textarea>
-                    </div>
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 4px; font-weight: 500; color: #495057;">
+                                Estimated Hours
+                            </label>
+                            <input type="number" name="estimated_hours" min="0" max="999.9" step="0.1"
+                                   style="width: 150px; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;"
+                                   placeholder="0.0">
+                            <span style="margin-left: 8px; color: #6c757d; font-size: 13px;">Optional: Estimated completion time</span>
+                        </div>
 
-                    <div style="margin-bottom: 16px;">
-                        <label style="display: block; margin-bottom: 4px; font-weight: 500; color: #495057;">
-                            Estimated Hours
-                        </label>
-                        <input type="number" name="estimated_hours" min="0" max="999.9" step="0.1"
-                               style="width: 150px; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;"
-                               placeholder="0.0">
-                        <span style="margin-left: 8px; color: #6c757d; font-size: 13px;">Optional: Estimated completion time</span>
-                    </div>
-
-                    <div style="text-align: right;">
-                        <button type="submit" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; font-size: 14px; cursor: pointer; font-weight: 500;">
-                            🎓 Create Course
-                        </button>
-                    </div>
-                </form>
+                        <div style="text-align: right;">
+                            <button type="submit" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; font-size: 14px; cursor: pointer; font-weight: 500;">
+                                🎓 Create Course
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
             <div class="card-content" style="padding: 0;">
                 <?php if (empty($courses)): ?>
@@ -698,6 +710,25 @@ $completion_rate = ($denominator > 0 && $total_posts > 0)
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('toggleCreateCourse');
+    const panel = document.getElementById('createCoursePanel');
+
+    if (toggleBtn && panel) {
+        const setButtonLabel = (isOpen) => {
+            toggleBtn.textContent = isOpen ? 'Hide Form ▴' : 'Show Form ▾';
+        };
+
+        setButtonLabel(false);
+
+        toggleBtn.addEventListener('click', function() {
+            const shouldOpen = panel.style.display === 'none';
+            panel.style.display = shouldOpen ? 'block' : 'none';
+            setButtonLabel(shouldOpen);
+        });
+    }
+});
+
 function showAssignUsersModal(courseId, courseName) {
     document.getElementById('assign_course_name').textContent = courseName;
     document.getElementById('assign_course_id').value = courseId;
