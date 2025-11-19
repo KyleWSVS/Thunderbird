@@ -23,34 +23,49 @@ include __DIR__ . '/../includes/header.php';
 ?>
 
 <style>
-    /* Per-user course progress table */
+    .analytics-intro {
+        color: #6c757d;
+        max-width: 820px;
+    }
+
+    .card.analytics-card {
+        border: 1px solid #dee2e6;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        border-radius: 8px;
+    }
+
+    .card-header.analytics-header {
+        background: #f8f9fa;
+        color: #1f2a44;
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .analytics-table th {
+        background: #f8f9fa;
+        font-size: 13px;
+        color: #4b5563;
+    }
+
     .course-progress-table th:nth-child(1) { width: 40%; }
     .course-progress-table th:nth-child(2) { width: 15%; }
     .course-progress-table th:nth-child(3) { width: 45%; }
 
     .status-pill {
         display: inline-block;
-        padding: 3px 10px;
-        border-radius: 999px;
+        padding: 4px 10px;
+        border-radius: 20px;
         font-size: 12px;
-        font-weight: 500;
+        font-weight: 600;
     }
-    .status-pill.completed {
-        background: #d4edda;
-        color: #155724;
-    }
-    .status-pill.in-progress {
-        background: #fff3cd;
-        color: #856404;
-    }
-    .status-pill.not-started {
-        background: #e2e3e5;
-        color: #383d41;
-    }
+    .status-pill.completed { background: #d1e7dd; color: #0f5132; }
+    .status-pill.in-progress { background: #fff3cd; color: #856404; }
+    .status-pill.not-started { background: #e9ecef; color: #495057; }
 
     .quiz-latest {
         font-size: 13px;
         margin-bottom: 4px;
+        color: #4b5563;
     }
 
     .quiz-attempts-table {
@@ -61,6 +76,31 @@ include __DIR__ . '/../includes/header.php';
     .quiz-attempts-table td {
         padding: 4px 6px;
     }
+
+    .stat-tile {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 12px 14px;
+        height: 100%;
+    }
+    .stat-tile h6 {
+        font-size: 12px;
+        color: #6c757d;
+        letter-spacing: 0.02em;
+        margin-bottom: 6px;
+    }
+    .stat-tile .value {
+        font-size: 21px;
+        font-weight: 700;
+        color: #212529;
+    }
+    .stat-tile .subtext {
+        font-size: 12px;
+        color: #6c757d;
+    }
+
+    .table > :not(caption) > * > * { vertical-align: middle; }
 </style>
 
 <div class="container">
@@ -76,7 +116,12 @@ if (!is_admin() && !is_super_admin()) {
 }
 ?>
 
-<h2 class="mt-4 mb-4">📊 Training Analytics Dashboard</h2>
+<div class="d-flex align-items-center justify-content-between flex-wrap mt-4 mb-3">
+    <div>
+        <h2 class="mb-1">📊 Training Analytics Dashboard</h2>
+        <p class="analytics-intro mb-0">A consolidated view of course assignments, completion rates, and user-level training performance.</p>
+    </div>
+</div>
 
 <?php
 // -----------------------------------------------------
@@ -101,9 +146,10 @@ try {
 }
 ?>
 
-<div class="card mb-4">
-    <div class="card-header">
-        <strong>Course Overview</strong>
+<div class="card analytics-card mb-4">
+    <div class="card-header analytics-header d-flex align-items-center justify-content-between">
+        <h5 class="mb-0">Course Overview</h5>
+        <span class="badge bg-secondary">Live snapshot</span>
     </div>
     <div class="card-body">
 
@@ -111,18 +157,19 @@ try {
             <p>No active training courses found.</p>
         <?php else: ?>
 
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Course Name</th>
-                    <th>Department</th>
-                    <th>Assigned</th>
-                    <th>Completed</th>
-                    <th>Completion Rate</th>
-                    <th>View</th>
-                </tr>
-            </thead>
-            <tbody>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover align-middle analytics-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Course Name</th>
+                        <th>Department</th>
+                        <th>Assigned</th>
+                        <th>Completed</th>
+                        <th>Completion Rate</th>
+                        <th>View</th>
+                    </tr>
+                </thead>
+                <tbody>
 
             <?php
             foreach ($courses as $course) {
@@ -160,15 +207,15 @@ try {
                     <td><?php echo $completed; ?></td>
                     <td><?php echo $rate; ?>%</td>
                     <td>
-                        <a href="?course_id=<?php echo $course_id; ?>" class="btn btn-primary btn-sm">
+                        <a href="?course_id=<?php echo $course_id; ?>" class="btn btn-outline-primary btn-sm">
                             View
                         </a>
                     </td>
                 </tr>
             <?php } ?>
-
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
 
         <?php endif; ?>
 
@@ -217,8 +264,8 @@ if (isset($_GET['course_id']) && ($course_id = intval($_GET['course_id'])) > 0 &
             echo "<div class='alert alert-warning'>No users are assigned to this course.</div>";
         } else {
 
-            echo "<div class='card mb-4'>
-                <div class='card-header'><strong>Assigned Users</strong></div>
+            echo "<div class='card analytics-card mb-4'>
+                <div class='card-header analytics-header'><h5 class='mb-0'>Assigned Users</h5></div>
                 <div class='card-body'>";
 
             // Overall course status counters
@@ -302,38 +349,64 @@ if (isset($_GET['course_id']) && ($course_id = intval($_GET['course_id'])) > 0 &
                     . '<td>' . $percent . '%</td>'
                     . '<td>' . $status . '</td>'
                     . '<td><a href="?course_id=' . $course_id . '&user_id=' . $uid . '" '
-                    . 'class="btn btn-sm btn-secondary">View User</a></td>'
+                    . 'class="btn btn-sm btn-outline-secondary">View User</a></td>'
                     . '</tr>';
             }
 
             // Summary block above the table
             echo "
-                <div class='alert alert-info mb-3' role='alert'>
-                    <strong>{$total_assigned}</strong> assigned &middot;
-                    <strong>{$total_in_progress}</strong> in progress &middot;
-                    <strong>{$total_completed}</strong> completed &middot;
-                    <strong>{$total_not_started}</strong> not started
+                <div class='row g-3 mb-3 text-center'>
+                    <div class='col-sm-6 col-lg-3'>
+                        <div class='stat-tile'>
+                            <h6>Assigned</h6>
+                            <div class='value'>{$total_assigned}</div>
+                            <div class='subtext'>Users enrolled</div>
+                        </div>
+                    </div>
+                    <div class='col-sm-6 col-lg-3'>
+                        <div class='stat-tile'>
+                            <h6>In Progress</h6>
+                            <div class='value text-warning'>{$total_in_progress}</div>
+                            <div class='subtext'>Actively working</div>
+                        </div>
+                    </div>
+                    <div class='col-sm-6 col-lg-3'>
+                        <div class='stat-tile'>
+                            <h6>Completed</h6>
+                            <div class='value text-success'>{$total_completed}</div>
+                            <div class='subtext'>Finished training</div>
+                        </div>
+                    </div>
+                    <div class='col-sm-6 col-lg-3'>
+                        <div class='stat-tile'>
+                            <h6>Not Started</h6>
+                            <div class='value text-muted'>{$total_not_started}</div>
+                            <div class='subtext'>Awaiting kickoff</div>
+                        </div>
+                    </div>
                 </div>
             ";
 
             // Now render the table with the collected rows
             echo "
-                <table class='table table-bordered table-striped'>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Completion %</th>
-                            <th>Status</th>
-                            <th>View</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {$rows_html}
-                    </tbody>
-                </table>
+                <div class='table-responsive'>
+                    <table class='table table-bordered table-striped table-hover align-middle analytics-table mb-0'>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Completion %</th>
+                                <th>Status</th>
+                                <th>View</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {$rows_html}
+                        </tbody>
+                    </table>
+                </div>
                 </div>
             </div>";
-        } 
+        }
     }
 }
 
@@ -406,28 +479,53 @@ if (isset($_GET['course_id']) && isset($_GET['user_id']) &&
             ? round(($sum_completed / $sum_total) * 100)
             : 0;
 
-                echo "
-        <div class='card mb-4'>
-            <div class='card-header'><strong>Course Progress</strong></div>
+        echo "
+        <div class='card analytics-card mb-4'>
+            <div class='card-header analytics-header d-flex align-items-center justify-content-between'>
+                <h5 class='mb-0'>Course Progress</h5>
+                <span class='badge bg-secondary'>User snapshot</span>
+            </div>
             <div class='card-body'>
-                <div class='alert alert-info mb-3' role='alert'>
-                    <strong>{$sum_total}</strong> required items &middot;
-                    <strong>{$sum_in_progress}</strong> in progress &middot;
-                    <strong>{$sum_completed}</strong> completed &middot;
-                    <strong>{$sum_not_started}</strong> not started
-                    <span style='float:right;'>
-                        Overall completion: <strong>{$sum_percent}%</strong>
-                    </span>
+                <div class='row g-3 mb-3 text-center'>
+                    <div class='col-sm-6 col-lg-3'>
+                        <div class='stat-tile'>
+                            <h6>Required Items</h6>
+                            <div class='value'>{$sum_total}</div>
+                            <div class='subtext'>Assignments in course</div>
+                        </div>
+                    </div>
+                    <div class='col-sm-6 col-lg-3'>
+                        <div class='stat-tile'>
+                            <h6>In Progress</h6>
+                            <div class='value text-warning'>{$sum_in_progress}</div>
+                            <div class='subtext'>Being worked on</div>
+                        </div>
+                    </div>
+                    <div class='col-sm-6 col-lg-3'>
+                        <div class='stat-tile'>
+                            <h6>Completed</h6>
+                            <div class='value text-success'>{$sum_completed}</div>
+                            <div class='subtext'>Finished items</div>
+                        </div>
+                    </div>
+                    <div class='col-sm-6 col-lg-3'>
+                        <div class='stat-tile'>
+                            <h6>Overall Completion</h6>
+                            <div class='value'>{$sum_percent}%</div>
+                            <div class='subtext'>Based on required items</div>
+                        </div>
+                    </div>
                 </div>
-                <table class='table table-bordered table-striped course-progress-table'>
-                    <thead>
-                        <tr>
-                            <th>Content</th>
-                            <th>Status</th>
-                            <th>Quiz</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div class='table-responsive'>
+                    <table class='table table-bordered table-striped table-hover align-middle course-progress-table analytics-table mb-0'>
+                        <thead>
+                            <tr>
+                                <th>Content</th>
+                                <th>Status</th>
+                                <th>Quiz</th>
+                            </tr>
+                        </thead>
+                        <tbody>
         ";
 
 
