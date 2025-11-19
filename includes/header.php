@@ -371,9 +371,17 @@ elseif ($is_prod): ?>
             <span class="dev-file-icon">🎓</span>
             <span class="dev-file-name">Training Courses</span>
           </a>
+          <a href="/admin/manage_course_content.php" class="dev-file-item">
+            <span class="dev-file-icon">📚</span>
+            <span class="dev-file-name">Course Content</span>
+          </a>
           <a href="/admin/manage_quizzes.php" class="dev-file-item">
             <span class="dev-file-icon">📝</span>
             <span class="dev-file-name">Manage Quizzes</span>
+          </a>
+          <a href="/admin/manage_quiz_questions.php" class="dev-file-item">
+            <span class="dev-file-icon">❓</span>
+            <span class="dev-file-name">Quiz Questions</span>
           </a>
           <a href="/admin/training_admin_analytics.php" class="dev-file-item">
             <span class="dev-file-icon">📊</span>
