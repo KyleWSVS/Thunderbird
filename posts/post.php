@@ -450,8 +450,8 @@ include __DIR__ . '/../includes/header.php';
         <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
             <span style="font-size: 18px;">📄</span>
             <div>
-                <div style="font-weight: 500; color: #333;"><?php echo htmlspecialchars($file['original_filename']); ?></div>
-                <div style="font-size: 12px; color: #666;"><?php echo format_filesize($file['file_size']); ?> • Click to view inline</div>
+                <div style="font-weight: 500; color: #333;">Document preview</div>
+                <div style="font-size: 12px; color: #666;">Click to view inline</div>
             </div>
         </div>
         <span id="preview_<?php echo $file['id']; ?>_arrow" style="font-size: 14px; color: #666;"><?php echo $initial_arrow; ?></span>
