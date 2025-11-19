@@ -478,6 +478,7 @@ include __DIR__ . '/../includes/header.php';
         <span class="current">Training Course Management</span>
     </div>
 
+
     <div class="card">
         <div class="card-header">
             <h2 class="card-title">🎓 Training Course Management</h2>
@@ -510,7 +511,7 @@ include __DIR__ . '/../includes/header.php';
             </div>
         <?php else: ?>
             <!-- Create New Course Form -->
-            <div class="card-content" style="padding: 20px; border-bottom: 1px solid #dee2e6;">
+            <div class="card-content" style="padding: 20px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
                     <h3 style="margin: 0; color: #495057;">➕ Create New Training Course</h3>
                     <button
@@ -572,6 +573,15 @@ include __DIR__ . '/../includes/header.php';
                     </form>
                 </div>
             </div>
+        <?php endif; ?>
+    </div>
+
+    <?php if ($training_tables_exist): ?>
+        <div class="card" style="margin-top: 16px;">
+            <div class="card-header">
+                <h3 class="card-title" style="margin: 0;">📚 Existing Training Courses</h3>
+            </div>
+
             <div class="card-content" style="padding: 0;">
                 <?php if (empty($courses)): ?>
                     <div style="padding: 40px; text-align: center; color: #6c757d;">
@@ -617,16 +627,16 @@ include __DIR__ . '/../includes/header.php';
                                             <?php endif; ?>
                                         </td>
                                         <td style="padding: 12px;">
-    <div style="font-weight: 500;">
-        <?php echo (int)$course['assigned_active_users']; ?> active
-        <span style="color: #6c757d; font-size: 12px; font-weight: normal;">
-            (<?php echo (int)$course['assigned_total_users']; ?> total)
-        </span>
-    </div>
-    <div style="font-size: 11px; color: #28a745;">
-        <?php echo (int)$course['completed_users']; ?> completed
-    </div>
-</td>
+                                            <div style="font-weight: 500;">
+                                                <?php echo (int)$course['assigned_active_users']; ?> active
+                                                <span style="color: #6c757d; font-size: 12px; font-weight: normal;">
+                                                    (<?php echo (int)$course['assigned_total_users']; ?> total)
+                                                </span>
+                                            </div>
+                                            <div style="font-size: 11px; color: #28a745;">
+                                                <?php echo (int)$course['completed_users']; ?> completed
+                                            </div>
+                                        </td>
                                         <td style="padding: 12px;">
                                             <?php
 $denominator = (int)$course['assigned_total_users'];
@@ -659,9 +669,8 @@ $completion_rate = ($denominator > 0 && $total_posts > 0)
                     </div>
                 <?php endif; ?>
             </div>
-        <?php endif; ?>
-    </div>
-</div>
+        </div>
+    <?php endif; ?>
 
 <!-- Assign Users Modal -->
 <div id="assignUsersModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
