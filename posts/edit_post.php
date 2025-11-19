@@ -77,8 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $post) {
         $error_message = 'Post title is required.';
     } elseif (strlen($title) > 500) {
         $error_message = 'Post title must be 500 characters or less.';
-    } elseif (empty(strip_tags($content))) {
-        $error_message = 'Post content is required.';
     } elseif ($privacy === 'shared' && empty($shared_with)) {
         $error_message = 'Please select at least one user to share with.';
     } else {
@@ -298,9 +296,9 @@ include __DIR__ . '/../includes/header.php';
                 </div>
 
                 <div class="form-group">
-                    <label for="content" class="form-label">Content *</label>
+                    <label for="content" class="form-label">Content</label>
                     <textarea id="content" name="content" class="form-textarea"><?php echo isset($_POST['content']) ? htmlspecialchars($_POST['content']) : htmlspecialchars($post['content']); ?></textarea>
-                    <div class="form-hint">Use the toolbar to format your content</div>
+                    <div class="form-hint">Use the toolbar to format your content. Content can be left empty.</div>
                 </div>
 
                 <?php if ($post['user_id'] == $_SESSION['user_id']): ?>
